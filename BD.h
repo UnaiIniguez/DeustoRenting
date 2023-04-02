@@ -75,9 +75,9 @@ typedef struct{
 int insertService(sqlite3 *db, Service sr);
 int deleteService(sqlite3 *db, int cod);
 int insertVehicle(sqlite3 *db, vehicle ve);
-int deleteVehicle(sqlite3 *db, char matricula[]);
+int deleteVehicle(sqlite3 *db, char registration_number[]);
 int insertUser(sqlite3 *db, User u);
-int modifyUser(sqlite3 *db, char * contrasenya, User u);
+int modifyUser(sqlite3 *db, char * password, User u);
 int insertContract(sqlite3 *db, Contract con);
 int deleteContract(sqlite3 *db, Contract con);
 

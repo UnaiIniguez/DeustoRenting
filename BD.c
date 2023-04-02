@@ -15,13 +15,13 @@ int insertService(sqlite3 *db, Service sr) {
 	result = sqlite3_bind_double(stmt, 3, sr.price);
 
 	if (result != SQLITE_OK) {
-		printf("Error metiendo parametros\n");
+		printf("Error with parameters\n");
 		printf("%s\n", sqlite3_errmsg(db));
 		return result;
 	}
 	result = sqlite3_step(stmt);
 	if (result != SQLITE_DONE) {
-		printf("Error insertando parametros\n");
+		printf("Error insert parameters\n");
 		return result;
 	}
 	result = sqlite3_finalize(stmt);
@@ -45,7 +45,7 @@ int deleteService(sqlite3 *db, int cod){
 	result = sqlite3_bind_int(stmt, cod, 1);
 	result = sqlite3_step(stmt);
 	if (result != SQLITE_DONE) {
-		printf("Error insertando parametros\n");
+		printf("Error insert parameters\n");
 		return result;
 	}
 	result = sqlite3_finalize(stmt);
@@ -83,13 +83,13 @@ int insertVehicle(sqlite3 *db, vehicle ve) {
 	result = sqlite3_bind_int(stmt, 7 , ve.num_doors);
 
 	if (result != SQLITE_OK) {
-		printf("Error metiendo parametros\n");
+		printf("Error with parameters\n");
 		printf("%s\n", sqlite3_errmsg(db));
 		return result;
 	}
 	result = sqlite3_step(stmt);
 	if (result != SQLITE_DONE) {
-		printf("Error insertando parametros\n");
+		printf("Error insert parameters\n");
 		return result;
 	}
 	result = sqlite3_finalize(stmt);
@@ -114,7 +114,7 @@ int deleteVehicle(sqlite3 *db, char matricula[]){
 					SQLITE_STATIC);
 		result = sqlite3_step(stmt);
 		if (result != SQLITE_DONE) {
-			printf("Error eliminando parametros\n");
+			printf("Error removing parameters\n");
 			return result;
 		}
 		result = sqlite3_finalize(stmt);
@@ -156,13 +156,13 @@ int insertUser(sqlite3 *db, User u){
 
 
 		if (result != SQLITE_OK) {
-			printf("Error metiendo parametros\n");
+			printf("Error with parameters\n");
 			printf("%s\n", sqlite3_errmsg(db));
 			return result;
 		}
 		result = sqlite3_step(stmt);
 		if (result != SQLITE_DONE) {
-			printf("Error insertando parametros\n");
+			printf("Error insert parameters\n");
 			return result;
 		}
 		result = sqlite3_finalize(stmt);
@@ -190,7 +190,7 @@ int modifyUser(sqlite3 *db, char * password, User u){
 
 			result = sqlite3_step(stmt);
 			if (result != SQLITE_DONE) {
-				printf("Error insertando parametros\n");
+				printf("Error insert parameters\n");
 				return result;
 			}
 			result = sqlite3_finalize(stmt);
@@ -229,13 +229,13 @@ int insertContract(sqlite3 *db, Contract con){
 	SQLITE_STATIC);
 
 	if (result != SQLITE_OK) {
-		printf("Error metiendo parametros\n");
+		printf("Error with parameters\n");
 		printf("%s\n", sqlite3_errmsg(db));
 		return result;
 	}
 	result = sqlite3_step(stmt);
 	if (result != SQLITE_DONE) {
-		printf("Error insertando parametros\n");
+		printf("Error insert parameters\n");
 		return result;
 	}
 	result = sqlite3_finalize(stmt);
@@ -263,7 +263,7 @@ int deleteContract(sqlite3 *db, Contract con){
 									SQLITE_STATIC);
 			result = sqlite3_step(stmt);
 			if (result != SQLITE_DONE) {
-				printf("Error eliminando parametros \n");
+				printf("Error removing parameters \n");
 				return result;
 			}
 			result = sqlite3_finalize(stmt);
