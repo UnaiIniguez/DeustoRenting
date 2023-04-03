@@ -7,6 +7,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include "vehicle.h"
+#include "administrador.h"
+#include "service.h"
 
 void showMenu(User* user);
 unsigned short getAction();

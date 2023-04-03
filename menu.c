@@ -23,9 +23,17 @@ void showMenu(User* user){
 	}else if(option == 3){
 
 	}else if(option == 4){
+		sqlite3 *db;
 
-	}else{
+		int result = sqlite3_open("DeustoRenting.db", &db);
+		printServicios(*user, db);
 
+	}else if(option == 5){
+		sqlite3 *db;
+
+		int result = sqlite3_open("DeustoRenting.db", &db);
+
+		isAdmin(db, user->dni);
 	}
 
 }

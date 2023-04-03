@@ -34,7 +34,7 @@ void showMenuAdmin(sqlite3 *db){
 	unsigned short option = getSelection();
 
 	if (option == 0) {
-		insertNewVehicle(db);
+		insertNewVehicle(db);//*******************************************
 	} else if (option == 1) {
 		eliminateVehicle(db);
 	} else if (option == 2) {
@@ -55,7 +55,7 @@ unsigned short getSelection(){
 	char* input = calloc(3, sizeof(char));
 	readLine(&input);
 	sscanf(input, "%hu", &option);
-	while(option > 4){
+	while(option > 5){
 		free(input);
 		input=NULL;
 		input = calloc(3, sizeof(char));
@@ -93,6 +93,40 @@ void eliminateVehicle(sqlite3 *db){
 
 }
 
+void optionSelect(Vehicle *vehicles, int num_vehicles,sqlite3 *db ) {
+
+
+
+	if (vehicles != NULL) {
+
+		int i;
+
+		for (i = 0; i < num_vehicles; i++) {
+			printf("\n\t%i. %s - %s - %s - %i(asientos) = %.2f", i, vehicles[i].brand, vehicles[i].model,vehicles[i].color,
+					vehicles[i].num_seats, vehicles[i].price );
+
+
+		}
+		printf("\n\n\tPara volver pulsa b ");
+		printf("\n-->");
+		char input[2];
+		fgets(input, sizeof(input), stdin); // Lee una línea completa incluyendo el salto de línea
+		input[strcspn(input, "\n")] = '\0'; // Elimina el salto de línea
+
+		while (toupper(input[0]) != 'B') {
+			printf("\nLetra incorrecta");
+			printf("\n-->");
+			fgets(input, sizeof(input), stdin);
+			input[strcspn(input, "\n")] = '\0';
+		}
+		showMenuAdmin(db);
+
+	}
+}
+
+
+
+
 void viewVehicles(sqlite3 *db){//******************************************
 
 	printLine();
@@ -100,7 +134,11 @@ void viewVehicles(sqlite3 *db){//******************************************
 	printfln("VEHICULOS ALQUILADOS");
 	printLine();
 	int num_Vehicles;
-	availableVehicles(db, &num_Vehicles);
+	Vehicle * vehicle = vehicleReserved(db, &num_Vehicles);
+	optionSelect(vehicle, num_Vehicles, db);
+
+
+
 
 
 
@@ -113,7 +151,7 @@ void insertNewVehicle(sqlite3 *db){
 	printf("\n");
 	printfln("INSERTAR VEHICULO");
 	printLine();
-	Vehicle * vehicle = NULL;
+	Vehicle * vehicle ;
 	getMarca(vehicle);
 	getModelo(vehicle);
 	getColor(vehicle);
@@ -131,11 +169,13 @@ void insertNewVehicle(sqlite3 *db){
 void getMarca(Vehicle *vehicle){
 
 	printfln("Marca del vehiculo:");
-	char *input = calloc(10, sizeof(char));
+	char *input = calloc(9, sizeof(char));
 	readLine(&input);
-	vehicle->brand = calloc(strlen(input), sizeof(char));
 	input[strlen(input) - 1] = '\0';
+
+	vehicle->brand = calloc(strlen(input), sizeof(char));
 	strcpy(vehicle->brand, input);
+
 	free(input);
 	input = NULL;
 }
@@ -143,7 +183,7 @@ void getMarca(Vehicle *vehicle){
 void getModelo(Vehicle *vehicle){
 
 	printfln("Modelo del vehiculo:");
-	char *input = calloc(10, sizeof(char));
+	char *input = calloc(9, sizeof(char));
 	readLine(&input);
 	vehicle->model = calloc(strlen(input), sizeof(char));
 	input[strlen(input) - 1] = '\0';
@@ -206,7 +246,7 @@ void insertNewService(sqlite3 *db){
 	printf("\n");
 	printfln("INSERTAR SERVICIO ADICIONAL");
 	printLine();
-	Service *service = NULL;
+	Service *service;
 	getDescripcion(service);
 	getPrecioServicio(service);
 	if(insertService(db, *service) == 1){
@@ -223,13 +263,14 @@ void insertNewService(sqlite3 *db){
 void getDescripcion(Service *service){
 
 	printfln("Descripcion del servicio:");
-	char *input = calloc(17, sizeof(char));
+	char *input = calloc(9, sizeof(char));
 	readLine(&input);
-	service->description = calloc(strlen(input), sizeof(char));
 	input[strlen(input) - 1] = '\0';
+	service->description = calloc(strlen(input),sizeof(char) );
 	strcpy(service->description, input);
 	free(input);
 	input = NULL;
+
 
 }
 
@@ -237,6 +278,7 @@ void getPrecioServicio(Service *service){
 
 	printf("Precio por servicio: ");
 	float precio = 0;
+	printf("\n-->");
 	scanf("%f", &precio);
 	service->price = precio;
 
@@ -249,11 +291,13 @@ void eliminateService(sqlite3 *db){
 	printfln("ELIMINAR SERVICIO");
 	printLine();
 	printf("Codigo del servicio que se desea eliminar: ");
+	printf("\n-->");
 	int cod = 0;
-	scanf("%d", &cod);
+	scanf("%i", &cod);
+
 
 	if (deleteService(db, cod) == 1) {
-		printf("El servicio se ha eliminado adecuadamente");
+		printf("\nEl servicio se ha eliminado adecuadamente");
 	} else {
 		printf("El servicio no existe");
 	}

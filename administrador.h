@@ -15,6 +15,7 @@
 #include "service.h"
 #include "Vehicle.h"
 #include "Menu.h"
+#include "ctype.h"
 
 void isAdmin(sqlite3 *db,char * dni);
 void showMenuAdmin(sqlite3 *db);

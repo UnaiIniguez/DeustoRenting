@@ -14,7 +14,7 @@ unsigned short optionSelected(Service *services, int num_services) {
 			printf("\n\t%i. %s", i, services[i].description);
 			printf("(Precio: %.2f)", services[i].price);
 		}
-		printf("\n\t%d. Volver", i);
+		printf("\n\t%d. Volver\n", i);
 		free(services);
 		char *input = calloc(5, sizeof(char));
 		readLine(&input);
@@ -41,12 +41,16 @@ void printServicios(User user, sqlite3 *db) {
 
 	Service *services = getServices(db, &num_services);
 
+
 	int p = optionSelected(services, num_services);	//Te devuelve la opcion que quiere almacenar
+
 
 	int j = insertServiceInContract(db, user, &services[p]);
 
 	if(j == 1){
-		printf("Se ha introducido adecuadamente");
+		printf("Se ha introducido adecuadamente\n");
+
+		showMenu(&user);
 	}
 	else{
 		printf("Ha habido un error");
@@ -58,7 +62,7 @@ void printServicios(User user, sqlite3 *db) {
 int insertService(sqlite3 *db, Service sr) {
 	sqlite3_stmt *stmt;
 	char consulta[] =
-			"insert into Servicios_Adicionales(Cod_Servicio, Descripcion, Precio) values (NULL,?,?,?)  ; ";
+			"insert into Servicios_Adicionales(Cod_Servicio, Descripcion, Precio) values (NULL,?,?)  ; ";
 
 	int result = sqlite3_prepare_v2(db, consulta, -1, &stmt, NULL);
 
@@ -83,7 +87,6 @@ int insertService(sqlite3 *db, Service sr) {
 		printf("%s\n", sqlite3_errmsg(db));
 		return result = 0;
 	}
-	printf("Prepared statement finalized (INSERT)\n");
 	return result = 1;
 
 }
@@ -94,7 +97,7 @@ int deleteService(sqlite3 *db, int cod) {
 			"delete from Servicios_Adicionales where Cod_Servicio = (?) ;";
 
 	int result = sqlite3_prepare_v2(db, consulta, -1, &stmt, NULL);
-	result = sqlite3_bind_int(stmt, cod, 1);
+	result = sqlite3_bind_int(stmt, 1, cod);
 	result = sqlite3_step(stmt);
 	if (result != SQLITE_DONE) {
 		printf("Error insert parameters\n");
@@ -107,7 +110,7 @@ int deleteService(sqlite3 *db, int cod) {
 		return result = 0;
 	}
 
-	printf("Prepared statement finalized (DELETE)\n");
+
 	return result = 1;
 
 }
@@ -148,7 +151,6 @@ Service * getServices(sqlite3* db, int* num_services){
 
 	sqlite3_finalize(stmt);
 	*num_services = num_rows;
-	printf("Prepared statement finalized (SELECT)\n");
 	return servicios;
 }
 
@@ -184,7 +186,7 @@ int insertServiceInContract(sqlite3 *db, User u, Service *service) {
 		return result = 0;
 	}
 
-	printf("Prepared statement finalized (INSERT)\n");
+
 	return result = 1;
 
 }
