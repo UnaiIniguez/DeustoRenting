@@ -256,6 +256,7 @@ Vehicle* availableVehicles(sqlite3 *db, int* num_Vehicles) {//******************
 
 		vehicles[num_rows - 1].num_doors = sqlite3_column_int(stmt, 6);
 	}
+
 	*num_Vehicles = num_rows;
 
 	sqlite3_finalize(stmt);
@@ -343,7 +344,49 @@ int modifyUser(sqlite3 *db, char *password, User u) {
 	return result = 1;
 
 }
-int userExist(sqlite3 *db, char DNI[], char *password) {
+
+int typeUser(sqlite3 *db, char *dni){
+    sqlite3_stmt *stmt;
+    char consulta[] = "SELECT Tipo FROM Usuarios WHERE DNI = ? ;";
+    int result = sqlite3_prepare_v2(db, consulta, -1, &stmt, NULL);
+    if (result != SQLITE_OK) {
+        printf("Error preparing statement: %s\n", sqlite3_errmsg(db));
+        return 0;
+    }
+
+    result = sqlite3_bind_text(stmt, 1, dni, strlen(dni), SQLITE_STATIC);
+    if (result != SQLITE_OK) {
+        printf("Error binding parameter: %s\n", sqlite3_errmsg(db));
+        sqlite3_finalize(stmt);
+        return 0;
+    }
+
+    result = sqlite3_step(stmt);
+    if (result == SQLITE_ROW) {
+        // Si la consulta devuelve una fila, el valor existe en la base de datos
+    } else if (result != SQLITE_DONE) {
+        // Si la consulta devuelve un error
+        printf("Error: %s\n", sqlite3_errmsg(db));
+        sqlite3_finalize(stmt);
+        return 0;
+    }
+
+    int type = 0; // Inicializar como usuario normal
+    if (sqlite3_column_count(stmt) > 0) { // Si hay alguna columna en la fila devuelta
+        type = sqlite3_column_int(stmt, 0); // Extraer el valor de la primera columna como entero
+    }
+
+    result = sqlite3_finalize(stmt);
+    if (result != SQLITE_OK) {
+        printf("Error ending prepared statement: %s\n", sqlite3_errmsg(db));
+        return 0;
+    }
+
+    return type;
+}
+
+
+int userExist(sqlite3 *db, char *DNI, char *password) {
     sqlite3_stmt *stmt;
     char consulta[] = "SELECT * FROM Usuarios WHERE DNI = ? AND Contrasenya = ?;";
     int result = sqlite3_prepare_v2(db, consulta, -1, &stmt, NULL);
