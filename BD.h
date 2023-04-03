@@ -1,14 +1,14 @@
 #ifndef BD_H_
 #define BD_H_
 #include <stdio.h>
-#include "../../lib/sqlite3.h"
+#include "sqlite3.h"
 #include <string.h>
 #include <stdlib.h>
-#include "../elements/contract.h"
-#include "../elements/service.h"
-#include "../elements/vehicle.h"
-#include "../elements/insurance.h"
-#include "../elements/user.h"
+#include "contract.h"
+#include "service.h"
+#include "vehicle.h"
+#include "insurance.h"
+#include "user.h"
 
 int insertService(sqlite3 *db, Service sr);	//Insertar Servicio
 int deleteService(sqlite3 *db, int cod);	//Eliminar servicio

@@ -1,10 +1,10 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include "user.h"
-#include "../std/stdout.h"
-#include "../std/stdin.h"
+#include "stdout.h"
+#include "stdin.h"
 #include "string.h"
-#include "../dataBase/BD.h"
+#include "BD.h"
 
 void getUser(User* user){
 	if(getOption()){

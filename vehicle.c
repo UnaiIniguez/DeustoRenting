@@ -1,7 +1,7 @@
 #include "vehicle.h"
 
-#define VEHICLES "../../docs/vehicles.txt"
-#define INFO "../../docs/info_vehicles.txt"
+#define VEHICLES "vehicles.txt"
+#define INFO "info_vehicles.txt"
 
 
 short showVechiles(void){

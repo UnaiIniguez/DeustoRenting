@@ -2,8 +2,8 @@
 #define VEHICLE_H_
 
 #include "vehicle.h"
-#include "../std/stdout.h"
-#include "../std/stdin.h"
+#include "stdout.h"
+#include "stdin.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include "user.h"

@@ -1,8 +1,8 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include "std/stdout.h"
-#include "elements/user.h"
-#include "elements/menu.h"
+#include "stdout.h"
+#include "user.h"
+#include "menu.h"
 
 
 void config(void);
