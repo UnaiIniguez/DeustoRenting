@@ -211,7 +211,7 @@ int deleteVehicle(sqlite3 *db, char matricula[]) {
 	return result = 1;
 }
 
-Vehicle* availableVehicles(sqlite3 *db) {//*********************************************************************************************
+Vehicle* availableVehicles(sqlite3 *db, int* num_Vehicles) {//*********************************************************************************************
 
 	sqlite3_stmt *stmt;
 	char consulta[] =
@@ -256,6 +256,7 @@ Vehicle* availableVehicles(sqlite3 *db) {//*************************************
 
 		vehicles[num_rows - 1].num_doors = sqlite3_column_int(stmt, 6);
 	}
+	*num_Vehicles = num_rows;
 
 	sqlite3_finalize(stmt);
 	printf("Prepared statement finalized (SELECT)\n");
