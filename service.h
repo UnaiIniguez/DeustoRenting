@@ -8,6 +8,7 @@
 #include "stdout.h"
 #include <stdio.h>
 #include <stdlib.h>
+
 typedef struct{
 
 	int cod_Service;
@@ -17,7 +18,11 @@ typedef struct{
 
 }Service;
 
+void printServicios(User user, sqlite3 *db) ;
 unsigned short optionSelected(Service *services, int num_services);
-void printServicios(User user, sqlite3 *db);
+Service * getServices(sqlite3 *db, int *num_services);	//Devuelve todos los servicios de la base de datos
+int insertService(sqlite3 *db, Service sr);	//Insertar Servicio
+int deleteService(sqlite3 *db, int cod);	//Eliminar servicio
+int insertServiceInContract(sqlite3 *db, User u, Service *service);	//Inserta en un contrato el servicio
 
 #endif

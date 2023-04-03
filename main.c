@@ -13,13 +13,10 @@ int main(int argc, char* argv[]){
 	start();
 }
 
-
-
 void config(void){
 	setbuf(stdout, NULL);
 	setbuf(stderr, NULL);
 }
-
 
 void start(void){
 	printfln("BIENVENIDO A DEUSTORENTING");

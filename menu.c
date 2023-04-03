@@ -1,9 +1,3 @@
-#include "user.h"
-#include "stdout.h"
-#include "stdin.h"
-#include <stdio.h>
-#include <stdlib.h>
-#include "vehicle.h"
 #include "menu.h"
 
 void showMenu(User* user){
