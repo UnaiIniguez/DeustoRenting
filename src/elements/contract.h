@@ -9,6 +9,7 @@ typedef struct{
 	int tank;
 	int cancellation_Hours;
 	char* dni_User;
+	int cod_Service;
 }Contract;
 
 #endif
