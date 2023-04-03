@@ -3,6 +3,7 @@
 
 #include "sqlite3.h"
 #include "user.h"
+#include "vehicle.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -18,6 +19,7 @@ typedef struct{
 	int cod_Service;
 }Contract;
 
+void initContract(Vehicle vehicle);
 int insertContract(sqlite3* db, Contract con);	//Insertar contrato
 int deleteContract(sqlite3* db, Contract con);	//Anular contrato
 Contract* viewContract(sqlite3 *db,char *dni);

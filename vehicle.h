@@ -17,10 +17,9 @@ typedef struct{
 	float price;
 }Vehicle;
 
+int showVechiles(Vehicle* vehicles);
 void bookVehicle(User* user);
-int showVechiles(void);
-void bookVehicle(User* user);
-short getVehicleIndex(void);
+int getVehicleIndex(Vehicle* vehicles);
 
 int insertVehicle(sqlite3 *db, Vehicle ve);	//Insertar vehiculo
 Vehicle* availableVehicles(sqlite3 *db, int *num_vehicles);	//Los vehiculos disponibles

@@ -1,5 +1,24 @@
 #include "contract.h"
 
+
+void initContract(Vehicle vehicle){
+	printf("\n");
+	printLine();
+	printfln("CONTRATO DE ALQUILER");
+	printLine();
+	printfln("DATOS DEL VEHÍCULO SELECCIONADO:\n"
+			"\tMatrícula: %s\n"
+			"\tMarca: %s\n"
+			"\tModelo: %s\n"
+			"\tColor: %d\n"
+			"\tNº de Plazas; %d\n"
+			"\tNº de Puertas: %d\n"
+			"\tPrecio: %.2f",
+			vehicle.registration_number, vehicle.brand, vehicle.model, vehicle.color, vehicle.num_seats, vehicle.num_doors, vehicle.price);
+
+}
+
+
 int insertContract(sqlite3 *db, Contract con) {
 
 	sqlite3_stmt *stmt;

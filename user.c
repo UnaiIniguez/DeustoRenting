@@ -26,15 +26,15 @@ void getUser(User* user){
 
 void checkDNI(User* user){
 //	while(hasDNI(user->dni)){
-		printf("El DNI introducido ya está registrado\n");
-		getDNI(user);
+//		printf("El DNI introducido ya está registrado\n");
+//		getDNI(user);
 //	}
 }
 
 void checkPassword(User* user){
 //	while(hasPassword(user->password)){
-		printf("La contraseña introducida ya está registrada\n");
-		getPassword(user, "");
+//		printf("La contraseña introducida ya está registrada\n");
+//		getPassword(user, "");
 //	}
 }
 
@@ -91,8 +91,11 @@ void getPassword(User* user, char* string){
 	readLine(&input);
 	user->password = calloc(strlen(input), sizeof(char));
 	input[strlen(input) - 1] = '\0';
+	printf("A");
 	strcpy(user->password, input);
+	printf("A");
 	free(input); input=NULL;
+	printf("A");
 }
 
 void getDNI(User* user){

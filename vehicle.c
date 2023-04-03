@@ -1,14 +1,14 @@
 #include "vehicle.h"
 
-int showVechiles(void){
+int showVechiles(Vehicle* vehicles){
 	printfln("ELIGE UN VEHÍCULO");
 	printLine();
-	int count = 0;
 	sqlite3* db;
 	if(sqlite3_open("DeustoRenting.db", &db) != SQLITE_OK){
 		fprintf(stderr, "Error al conectarse a la base de datos");
 	}
-	Vehicle* vehicles = availableVehicles(db, &count);
+	int count = 0;
+	vehicles = availableVehicles(db, &count);
 	sqlite3_close(db);
 	for(int i = 0; i < count; i++) {
 		printfln("\t%d. %s %s: %.2f ", i+1, vehicles[i].brand, vehicles[i].model, vehicles[i].price);
@@ -17,26 +17,31 @@ int showVechiles(void){
 }
 
 void bookVehicle(User* user){
-	short index = getVehicleIndex();
-	fprintf(stderr, "Indice: %d", index);
+	Vehicle* vehicles = NULL;
+	int option = getVehicleIndex(vehicles);
+	if(option < 0){
+		fprintf(stderr, "No se consta de vehículos disponibles\n");
+		return;
+	}
+//	initContract(vehicles[option]);
 }
 
-short getVehicleIndex(void){
-	int option = showVechiles();
-	int optionMAX = option - 1;
-	if(option < 0) return - 1;
+int getVehicleIndex(Vehicle* vehicles){
+	int count = showVechiles(vehicles);
+	if(count < 0) return - 1;
+	int optionMAX = count - 1;
 	char* input = calloc(3, sizeof(char));
 	readLine(&input);
-	sscanf(input, "%d", &option);
-	while(option > optionMAX){
+	sscanf(input, "%d", &count);
+	while(count > optionMAX){
 		free(input); input=NULL;
 		input = calloc(3, sizeof(char));
-		printfln("La opción '%d' no existe. Seleccione una opción válida", option);
+		printfln("La opción '%d' no existe. Seleccione una opción válida", count);
 		readLine(&input);
-		sscanf(input, "%d", &option);
+		sscanf(input, "%d", &count);
 	}
 	free(input); input=NULL;
-	return option;
+	return count;
 }
 
 
