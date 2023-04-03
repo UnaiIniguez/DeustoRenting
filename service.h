@@ -14,7 +14,7 @@ typedef struct{
 	int cod_Service;
 	char *description;
 	float price;
-	int type;
+
 
 }Service;
 

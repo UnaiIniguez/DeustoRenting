@@ -58,14 +58,14 @@ void printServicios(User user, sqlite3 *db) {
 int insertService(sqlite3 *db, Service sr) {
 	sqlite3_stmt *stmt;
 	char consulta[] =
-			"insert into Servicios_Adicionales(Cod_Servicio, Tipo, Descripcion, Precio) values (NULL,?,?,?)  ; ";
+			"insert into Servicios_Adicionales(Cod_Servicio, Descripcion, Precio) values (NULL,?,?,?)  ; ";
 
 	int result = sqlite3_prepare_v2(db, consulta, -1, &stmt, NULL);
 
-	result = sqlite3_bind_int(stmt, sr.type, 1);
-	result = sqlite3_bind_text(stmt, 2, sr.description, strlen(sr.description),
+
+	result = sqlite3_bind_text(stmt, 1, sr.description, strlen(sr.description),
 	SQLITE_STATIC);
-	result = sqlite3_bind_double(stmt, 3, sr.price);
+	result = sqlite3_bind_double(stmt, 2, sr.price);
 
 	if (result != SQLITE_OK) {
 		printf("Error with parameters\n");
@@ -139,10 +139,9 @@ Service * getServices(sqlite3* db, int* num_services){
 		servicios = tmp;
 
 		servicios[num_rows - 1].cod_Service = sqlite3_column_int(stmt, 0);
-		servicios[num_rows - 1].type= sqlite3_column_int(stmt, 1);
 		servicios[num_rows - 1].description = strdup(
-				(char*) sqlite3_column_text(stmt, 2));
-		servicios[num_rows - 1].price = sqlite3_column_double(stmt, 3);
+				(char*) sqlite3_column_text(stmt, 1));
+		servicios[num_rows - 1].price = sqlite3_column_double(stmt, 2);
 
 	}
 
