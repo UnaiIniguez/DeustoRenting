@@ -2,20 +2,20 @@
 #include <stdlib.h>
 #include "std/stdout.h"
 #include "elements/user.h"
+#include "elements/menu.h"
 
 
-void initBuffers(void);
+void config(void);
 void start(void);
 
 int main(int argc, char* argv[]){
-	initBuffers();
+	config();
 	start();
 }
 
 
 
-// Inicializa los buffers de salida a NULL
-void initBuffers(void){
+void config(void){
 	setbuf(stdout, NULL);
 	setbuf(stderr, NULL);
 }
@@ -26,4 +26,5 @@ void start(void){
 	printLine();
 	User* user = calloc(1, sizeof(user));
 	getUser(user);
+	showMenu(user);
 }

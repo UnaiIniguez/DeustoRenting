@@ -14,5 +14,4 @@ void readLine(char** string){
         fprintf(stderr, "ERROR EN LA LECTURA\n");
         return;
     }
-    (*string)[charsRead] = '\0';
 }

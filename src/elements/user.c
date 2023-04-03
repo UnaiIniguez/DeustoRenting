@@ -26,6 +26,7 @@ void getUser(User* user){
 		getPassword(user, "");
 		checkPassword(user);
 	}
+
 }
 
 void checkDNI(User* user){
@@ -36,8 +37,8 @@ void checkDNI(User* user){
 }
 
 void checkPassword(User* user){
-	while(hasDNI(user->password)){
-		printf("El DNI introducido ya está registrado\n");
+	while(hasPassword(user->password)){
+		printf("La contraseña introducida ya está registrada\n");
 		getPassword(user, "");
 	}
 }
@@ -88,6 +89,7 @@ void getEmail(User* user){
 	free(input); input=NULL;
 }
 
+
 void getPassword(User* user, char* string){
 	printfln("Introduzca su contraseña %s", string);
 	char* input = calloc(10, sizeof(char));
@@ -123,7 +125,7 @@ unsigned short getOption(void){
 	sscanf(input, "%hu", &option);
 	while(option > 1){
 		free(input); input=NULL;
-		input = calloc(5, sizeof(char));
+		input = calloc(3, sizeof(char));
 		printfln("La opción '%d' no existe. Seleccione una opción válida", option);
 		readLine(&input);
 		sscanf(input, "%hu", &option);
