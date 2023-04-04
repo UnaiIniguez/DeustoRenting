@@ -70,20 +70,22 @@ void generateContract(char* dni, char* registration_number, int cod_service) {
 	contract.date_end = getDateEnd();
 	contract.cancellation_hours = randomInt(1, 3) * 24;
 
-	printf("El contrato generado para la compra es el siguiente:\n");
-	printf("\tMatrícula: %s\n", contract.registration_number);
-	printf("\tFecha inicio: %s\n", contract.date_start);
-	printf("\tFecha fin: %s\n", contract.date_end);
-	printf("\tEntrega del vehículo con el tanque lleno: %d\n", contract.tank);
-	printf("\tHoras de cancelación: %d\n", contract.cancellation_hours);
-	printf("\tDNI del usuario: %s\n", contract.dni_user);
-	printf("\tCódigo del servicio contratado: %d\n", contract.cod_service);
+	writeContractTXT(contract , "contract.txt");
+//Si te mola el formato del txt eliminar los prints, son solo para comprobar
+//	printf("El contrato generado para la compra es el siguiente:\n");
+//	printf("\tMatrícula: %s\n", contract.registration_number);
+//	printf("\tFecha inicio: %s\n", contract.date_start);
+//	printf("\tFecha fin: %s\n", contract.date_end);
+//	printf("\tEntrega del vehículo con el tanque lleno: %d\n", contract.tank);
+//	printf("\tHoras de cancelación: %d\n", contract.cancellation_hours);
+//	printf("\tDNI del usuario: %s\n", contract.dni_user);
+//	printf("\tCódigo del servicio contratado: %d\n", contract.cod_service);
 }
 
 
 void showOptions(void){
 	printfln("0. Añadir Servicio\n"
-			"1.Comprar Vehículo");
+			"1.Alquilar Vehículo");
 }
 
 unsigned short getServiceOption(void){
@@ -236,5 +238,33 @@ Contract* viewContract(sqlite3 *db,char dni[]){
 	printf("Prepared statement finalized (SELECT)\n");
 
 	return con1;
+
+}
+
+void writeContractTXT( Contract contract ,char *file) {
+
+	//Cuando se añada la parte de la reserva añadir un array de reservas
+	// a la entreda para poder extraer su informacion
+
+	FILE *f = fopen(file, "w");
+
+	fprintf(f, "\tDatos de su contrato\n");
+	fprintf(f, "\t-------------------\n");
+
+	fprintf(f, "\tDNI: %s\n", contract.dni_user);
+	fprintf(f, "\tMatricula: %s\n", contract.registration_number);
+	fprintf(f, "\tFecha de recojida: %s\n", contract.date_start);
+	fprintf(f, "\tFecha de entrega: %s\n", contract.date_end);
+	fprintf(f, "\tEntrega del vehículo con el tanque lleno: %d\n", contract.tank);
+	fprintf(f, "\tHoras de cancelación: %d\n", contract.cancellation_hours);
+	if (contract.cod_service == -1) {
+		fprintf(f, "\tCódigo del servicio contratado: No contratado\n");
+	}else{
+		fprintf(f, "\tCódigo del servicio contratado: %d\n", contract.cod_service);
+	}
+
+	logger("Factura guardada");
+
+	fclose(f);
 
 }

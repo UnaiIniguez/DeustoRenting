@@ -32,5 +32,6 @@ void generateContract(char* dni, char* registration_number, int cod_service);
 int randomInt(int min, int max);
 char* getDateStart();
 char* getDateEnd();
+void writeContractTXT(Contract contract, char *archivo);
 
 #endif

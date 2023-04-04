@@ -21,27 +21,6 @@ void readFileTXT(char *archivo) {
 
 }
 
-void writeFileTXT( Contract contract ,char *file) {
-
-	//Cuando se añada la parte de la reserva añadir un array de reservas
-	// a la entreda para poder extraer su informacion
-
-	FILE *f = fopen(file, "w");
-
-	fprintf(f, "Datos de su reserva\n");
-	fprintf(f, "-------------------\n");
-
-	fprintf(f, "DNI: %s\n", contract.dni_user);
-	fprintf(f, "Numero de reserva: %s\n", contract.registration_number);
-	fprintf(f, "Fecha de recojida: %s\n", contract.date_start);
-	fprintf(f, "Fecha de entrega: %s\n", contract.date_end);
-
-	logger("Factura guardada");
-
-	fclose(f);
-
-}
-
 void writeRules(char *file) {
 
 	FILE *f = fopen(file, "w");
