@@ -1,19 +1,12 @@
-/*
- * administrador.h
- *
- *  Created on: 3 abr 2023
- *      Author: ihern
- */
-
 #ifndef ADMINISTRADOR_H_
 #define ADMINISTRADOR_H_
 
-#include "stdout.h"
-#include "stdin.h"
 #include <stdio.h>
 #include <stdlib.h>
+#include "stdout.h"
+#include "stdin.h"
 #include "service.h"
-#include "Vehicle.h"
+#include "vehicle.h"
 #include "Menu.h"
 #include "ctype.h"
 

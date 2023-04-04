@@ -1,6 +1,6 @@
 #include "vehicle.h"
 
-int showVechiles(Vehicle* vehicles){
+int showVechiles(Vehicle** vehicles){
 	printfln("ELIGE UN VEHÍCULO");
 	printLine();
 	sqlite3* db;
@@ -8,25 +8,31 @@ int showVechiles(Vehicle* vehicles){
 		fprintf(stderr, "Error al conectarse a la base de datos");
 	}
 	int count = 0;
-	vehicles = availableVehicles(db, &count);
+	*vehicles = availableVehicles(db, &count);
 	sqlite3_close(db);
 	for(int i = 0; i < count; i++) {
-		printfln("\t%d. %s %s: %.2f ", i+1, vehicles[i].brand, vehicles[i].model, vehicles[i].price);
+		printfln("\t%d. %s %s: %.2f€ ", i, (*vehicles)[i].brand, (*vehicles)[i].model, (*vehicles)[i].price);
 	}
 	return count;
 }
 
-void bookVehicle(User* user){
-	Vehicle* vehicles = NULL;
-	int option = getVehicleIndex(vehicles);
-	if(option < 0){
-		fprintf(stderr, "No se consta de vehículos disponibles\n");
-		return;
-	}
-//	initContract(vehicles[option]);
+void showVehicle(Vehicle vehicle){
+	printf("\n");
+	printLine();
+	printfln("CONTRATO DE ALQUILER");
+	printLine();
+	printfln("DATOS DEL VEHÍCULO SELECCIONADO:\n"
+			"\tMatrícula: %s\n"
+			"\tMarca: %s\n"
+			"\tModelo: %s\n"
+			"\tColor: %d\n"
+			"\tNº de Plazas; %d\n"
+			"\tNº de Puertas: %d\n"
+			"\tPrecio: %.2f",
+			vehicle.registration_number, vehicle.brand, vehicle.model, vehicle.color, vehicle.num_seats, vehicle.num_doors, vehicle.price);
 }
 
-int getVehicleIndex(Vehicle* vehicles){
+int getVehicleIndex(Vehicle** vehicles){
 	int count = showVechiles(vehicles);
 	if(count < 0) return - 1;
 	int optionMAX = count - 1;
@@ -117,7 +123,7 @@ Vehicle* availableVehicles(sqlite3 *db, int* num_Vehicles) {//******************
 
 	sqlite3_stmt *stmt;
 	char consulta[] =
-			"select ve.modelo, ve.marca, ve.color , ve.Num_Plazas, ve.Matricula, ve.precio, ve.Num_Puerta FROM Vehiculos ve, Contratos co WHERE ve.Matricula != co.Matricula  ; ";
+			"select ve.modelo, ve.marca, ve.color, ve.Num_Plazas, ve.Matricula, ve.precio, ve.Num_Puerta FROM Vehiculos ve WHERE ve.Matricula NOT IN (SELECT Matricula FROM Contratos);";
 
 	int result = sqlite3_prepare_v2(db, consulta, -1, &stmt, NULL);
 

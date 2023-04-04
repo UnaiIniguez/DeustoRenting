@@ -1,6 +1,5 @@
 #include "user.h"
 
-
 void getUser(User* user){
 	if(getOption()){
 		printf("\n");
@@ -43,7 +42,6 @@ void getName(User* user){
 	char* input = calloc(10, sizeof(char));
 	readLine(&input);
 	user->name = calloc(strlen(input), sizeof(char));
-	input[strlen(input) - 1] = '\0';
 	strcpy(user->name, input);
 	free(input); input=NULL;
 }
@@ -53,7 +51,6 @@ void getSurname1(User* user){
 	char* input = calloc(10, sizeof(char));
 	readLine(&input);
 	user->surname1 = calloc(strlen(input), sizeof(char));
-	input[strlen(input) - 1] = '\0';
 	strcpy(user->surname1, input);
 	free(input); input=NULL;
 }
@@ -63,7 +60,6 @@ void getSurname2(User* user){
 	char* input = calloc(10, sizeof(char));
 	readLine(&input);
 	user->surname2 = calloc(strlen(input), sizeof(char));
-	input[strlen(input) - 1] = '\0';
 	strcpy(user->surname2, input);
 	free(input); input=NULL;
 }
@@ -79,41 +75,36 @@ void getEmail(User* user){
 		readLine(&input);
 	}
 	user->email = calloc(strlen(input), sizeof(char));
-	input[strlen(input) - 1] = '\0';
 	strcpy(user->email, input);
 	free(input); input=NULL;
-}
-
-
-void getPassword(User* user, char* string){
-	printfln("Introduzca su contraseña %s", string);
-	char* input = calloc(10, sizeof(char));
-	readLine(&input);
-	user->password = calloc(strlen(input), sizeof(char));
-	input[strlen(input) - 1] = '\0';
-	printf("A");
-	strcpy(user->password, input);
-	printf("A");
-	free(input); input=NULL;
-	printf("A");
 }
 
 void getDNI(User* user){
     printfln("Introduzca su DNI");
     char* input = calloc(10, sizeof(char));
     readLine(&input);
-    while(strlen(input) != 10){
-        printfln("El DNI debe tener 9 carácteres. Usted ha introducido %lu", strlen(input) - 1);
+    while(strlen(input) != 9){
+        printfln("El DNI debe tener 9 carácteres. Usted ha introducido %d", strlen(input));
         free(input); input=NULL;
         input = calloc(10, sizeof(char));
         readLine(&input);
     }
-    input[strlen(input) - 1] = '\0';
     user->dni = calloc(strlen(input), sizeof(char));
     strcpy(user->dni, input);
     free(input); input = NULL;
 }
 
+void getPassword(User* user, char* string){
+    printfln("Introduzca su contraseña %s", string);
+    char* input = NULL;
+    int length = readLine(&input);
+    user->password = calloc(length + 1, sizeof(char));
+    if (user->password == NULL) {
+        fprintf(stderr, "Error\n");
+    }
+    strcpy(user->password, input);
+    free(input); input = NULL;
+}
 
 unsigned short getOption(void){
 	unsigned short option = 2;

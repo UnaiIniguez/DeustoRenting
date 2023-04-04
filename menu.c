@@ -23,15 +23,20 @@ void showMenu(User* user){
 	}else if(option == 3){
 
 	}else if(option == 4){
-		sqlite3 *db;
-
-		int result = sqlite3_open("DeustoRenting.db", &db);
-		printServicios(*user, db);
+		sqlite3* db;
+		if(sqlite3_open("DeustoRenting.db", &db) != SQLITE_OK){
+			fprintf(stderr, "Error al conectarse a la base de datos");
+			exit(1);
+		}
+//		printServicios(*user, db);
 
 	}else if(option == 5){
-		sqlite3 *db;
 
-		int result = sqlite3_open("DeustoRenting.db", &db);
+		sqlite3* db;
+		if(sqlite3_open("DeustoRenting.db", &db) != SQLITE_OK){
+			fprintf(stderr, "Error al conectarse a la base de datos");
+			exit(1);
+		}
 
 		isAdmin(db, user->dni);
 	}
@@ -48,7 +53,6 @@ unsigned short getAction(){
 		input = calloc(3, sizeof(char));
 		printfln("La opción '%d' no existe. Seleccione una opción válida", option);
 		readLine(&input);
-		sscanf(input, "%hu", &option);
 	}
 	free(input); input=NULL;
 	return option;

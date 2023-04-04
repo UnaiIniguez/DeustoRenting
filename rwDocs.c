@@ -1,10 +1,3 @@
-/*
- * rwDocs.c
- *
- *  Created on: 2 abr 2023
- *      Author: Usuario
- */
-
 #include "rwDocs.h"
 
 void readFileTXT(char *archivo) {
@@ -38,11 +31,10 @@ void writeFileTXT( Contract contract ,char *file) {
 	fprintf(f, "Datos de su reserva\n");
 	fprintf(f, "-------------------\n");
 
-	fprintf(f, "DNI: %s\n", contract.dni_User);
+	fprintf(f, "DNI: %s\n", contract.dni_user);
 	fprintf(f, "Numero de reserva: %s\n", contract.registration_number);
-	fprintf(f, "Fecha de recojida: %s\n", contract.date_Start);
+	fprintf(f, "Fecha de recojida: %s\n", contract.date_start);
 	fprintf(f, "Fecha de entrega: %s\n", contract.date_end);
-	fprintf(f, "Descripcion general de la reserva:\n %s\n", contract.description);
 
 	logger("Factura guardada");
 

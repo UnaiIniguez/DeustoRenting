@@ -11,7 +11,7 @@ void isAdmin(sqlite3 *db,char * dni){
 		showMenuAdmin(db);
 
 	}else{
-		printf( "No eres administrador");
+		printf("No eres administrador");
 	}
 
 }
@@ -34,11 +34,11 @@ void showMenuAdmin(sqlite3 *db){
 	unsigned short option = getSelection();
 
 	if (option == 0) {
-		insertNewVehicle(db);//*******************************************
+		insertNewVehicle(db);
 	} else if (option == 1) {
 		eliminateVehicle(db);
 	} else if (option == 2) {
-		viewVehicles(db);//***********************************************
+		viewVehicles(db);
 
 	} else if (option == 3) {
 		insertNewService(db);
@@ -54,23 +54,17 @@ unsigned short getSelection(){
 	unsigned short option = 5;
 	char* input = calloc(3, sizeof(char));
 	readLine(&input);
-	sscanf(input, "%hu", &option);
 	while(option > 5){
 		free(input);
 		input=NULL;
 		input = calloc(3, sizeof(char));
 		printfln("La opción '%d' no existe. Seleccione una opción válida", option);
 		readLine(&input);
-		sscanf(input, "%hu", &option);
 	}
 	free(input); input=NULL;
 	return option;
 }
 
-
-
-
-//************************************************************************
 void eliminateVehicle(sqlite3 *db){
 
 	printLine();
@@ -80,7 +74,6 @@ void eliminateVehicle(sqlite3 *db){
 	printfln("Matricula del vehiculo que se desea eliminar:");
 	char *input = calloc(9, sizeof(char));
 	readLine(&input);
-	input[strlen(input) - 1] = '\0';
 	char registration[9];
 	strcpy(registration, input);
 	free(input);
@@ -88,7 +81,7 @@ void eliminateVehicle(sqlite3 *db){
 	if(deleteVehicle(db, registration) == 1){
 		printf("El vehiculo se ha eliminado adecuadamente");
 	}else{
-		printf("Ese vehiculo no existe");
+		printf("No existe ningún vehículo con matrícula %s", input);
 	}
 
 }
@@ -134,14 +127,11 @@ void viewVehicles(sqlite3 *db){//******************************************
 	printfln("VEHICULOS ALQUILADOS");
 	printLine();
 	int num_Vehicles;
-	Vehicle * vehicle = vehicleReserved(db, &num_Vehicles);
-	optionSelect(vehicle, num_Vehicles, db);
-
-
-
-
-
-
+	if(sqlite3_open("DeustoRenting.db", &db) != SQLITE_OK){
+		fprintf(stderr, "Error al conectarse a la base de datos");
+	}
+	optionSelect(vehicleReserved(db, &num_Vehicles), num_Vehicles, db);
+	sqlite3_close(db);
 }
 
 
@@ -151,31 +141,27 @@ void insertNewVehicle(sqlite3 *db){
 	printf("\n");
 	printfln("INSERTAR VEHICULO");
 	printLine();
-	Vehicle * vehicle ;
-	getMarca(vehicle);
-	getModelo(vehicle);
-	getColor(vehicle);
-	getPlazas(vehicle);
-	getMatricula(vehicle);
-	getPrecioVehiculo(vehicle);
-	getPuertas(vehicle);
-	if(insertVehicle(db, *vehicle) == 1){
-		printf("\nSe ha insertado correctamente\n");
+	Vehicle vehicle;
+	getMarca(&vehicle);
+	getModelo(&vehicle);
+	getColor(&vehicle);
+	getPlazas(&vehicle);
+	getMatricula(&vehicle);
+	getPrecioVehiculo(&vehicle);
+	getPuertas(&vehicle);
+	if(insertVehicle(db, vehicle) == 1){
+		printf("\nEl vehículo se ha insertado correctamente\n");
 	}else{
-		printf("\nNo se ha insertado correctamente\n");
+		printf("\nEl vehículo no se ha insertado correctamente\n");
 	}
 }
 
 void getMarca(Vehicle *vehicle){
-
 	printfln("Marca del vehiculo:");
 	char *input = calloc(9, sizeof(char));
 	readLine(&input);
-	input[strlen(input) - 1] = '\0';
-
 	vehicle->brand = calloc(strlen(input), sizeof(char));
 	strcpy(vehicle->brand, input);
-
 	free(input);
 	input = NULL;
 }
@@ -186,7 +172,6 @@ void getModelo(Vehicle *vehicle){
 	char *input = calloc(9, sizeof(char));
 	readLine(&input);
 	vehicle->model = calloc(strlen(input), sizeof(char));
-	input[strlen(input) - 1] = '\0';
 	strcpy(vehicle->model, input);
 	free(input);
 	input = NULL;
@@ -198,7 +183,6 @@ void getColor(Vehicle *vehicle){
 	char *input = calloc(10, sizeof(char));
 	readLine(&input);
 	vehicle->color = calloc(strlen(input), sizeof(char));
-	input[strlen(input) - 1] = '\0';
 	strcpy(vehicle->color, input);
 	free(input);
 	input = NULL;
@@ -218,7 +202,6 @@ void getMatricula(Vehicle *vehicle){
 	printfln("Matricula del vehiculo:");
 	char *input = calloc(9, sizeof(char));
 	readLine(&input);
-	input[strlen(input) - 1] = '\0';
 	strcpy(vehicle->registration_number, input);
 	free(input);
 	input = NULL;
@@ -246,32 +229,25 @@ void insertNewService(sqlite3 *db){
 	printf("\n");
 	printfln("INSERTAR SERVICIO ADICIONAL");
 	printLine();
-	Service *service;
-	getDescripcion(service);
-	getPrecioServicio(service);
-	if(insertService(db, *service) == 1){
-		printf("\nSe ha insertado correctamente\n");
+	Service service;
+	getDescripcion(&service);
+	getPrecioServicio(&service);
+	if(insertService(db, service) == 1){
+		printfln("\nSe ha insertado correctamente");
 	}else{
-		printf("\nNo se ha insertado correctamente\n");
+		printfln("\nNo se ha insertado correctamente");
 	}
-
-
-
 
 }
 
 void getDescripcion(Service *service){
-
 	printfln("Descripcion del servicio:");
 	char *input = calloc(9, sizeof(char));
 	readLine(&input);
-	input[strlen(input) - 1] = '\0';
 	service->description = calloc(strlen(input),sizeof(char) );
 	strcpy(service->description, input);
 	free(input);
 	input = NULL;
-
-
 }
 
 void getPrecioServicio(Service *service){
@@ -295,20 +271,9 @@ void eliminateService(sqlite3 *db){
 	int cod = 0;
 	scanf("%i", &cod);
 
-
 	if (deleteService(db, cod) == 1) {
 		printf("\nEl servicio se ha eliminado adecuadamente");
 	} else {
 		printf("El servicio no existe");
 	}
-
-
 }
-
-
-
-
-
-
-
-

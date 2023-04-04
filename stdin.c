@@ -2,16 +2,34 @@
 #include <stdio.h>
 #include <string.h>
 
-#define BUFFERSIZE 10
+#define INITIAL_SIZE 10
 
-void readLine(char** string){
+int readLine(char **input) {
+	printf("-->");
 
-    printf("-->");
-
-    size_t stringSize = strlen(*string);
-    size_t charsRead = getline(string, &stringSize, stdin);
-    if (charsRead == -1) {
-        fprintf(stderr, "ERROR EN LA LECTURA\n");
-        return;
+    size_t size = INITIAL_SIZE;
+    char* buffer = calloc(size, sizeof(char));
+    int i = 0;
+    char c = getchar();
+    while (c != '\n' && c != EOF) {
+        if (i < size - 1) {
+            buffer[i++] = c;
+        }else{
+        	size *= 2;
+        	buffer = realloc(buffer, size);
+        	if(buffer == NULL){
+        		fprintf(stderr, "Error en la asignacion de memoria");
+        		return -1;
+        	}
+        }
+        c = getchar();
     }
+    buffer[i] = '\0';
+    *input = calloc(i + 1, sizeof(char));
+    if (*input == NULL) {
+        return -1;
+    }
+    strcpy(*input, buffer);
+    return i;
 }
+

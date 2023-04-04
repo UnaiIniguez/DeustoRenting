@@ -4,7 +4,6 @@
 #include "user.h"
 #include "menu.h"
 
-
 void config(void);
 void start(void);
 
