@@ -8,7 +8,7 @@
 #include <stdlib.h>
 
 typedef struct{
-	char registration_number[9];
+	char* registration_number;
 	int num_doors;
 	char *color;
 	char *model;
@@ -23,7 +23,8 @@ int getVehicleIndex(Vehicle** vehicles);
 Vehicle *vehicleReserved(sqlite3 *db, int *num_Vehicles);
 int insertVehicle(sqlite3 *db, Vehicle ve);	//Insertar vehiculo
 Vehicle* availableVehicles(sqlite3 *db, int *num_vehicles);	//Los vehiculos disponibles
-Vehicle getUsersVehicle(sqlite3 *db, char *dni);
+Vehicle* getUsersVehicle(sqlite3 *db, char *dni);
 int deleteVehicle(sqlite3 *db, char registration_number[]);	//Eliminar vehiculo
+void freeVehicle(Vehicle* vehicle);
 
 #endif

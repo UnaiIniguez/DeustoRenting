@@ -1,6 +1,6 @@
 #include "contract.h"
 
-#define DIRCONTRACT "contract.txt"
+#define DIRCONTRACT "C:/Users/contract.txt"
 
 void initContract(Vehicle vehicle, char* dni){
 	showVehicle(vehicle);
@@ -15,13 +15,24 @@ void initContract(Vehicle vehicle, char* dni){
 }
 
 void bookVehicle(User* user){
-	Vehicle* vehicles = NULL;
-	int option = getVehicleIndex(&vehicles);
-	if(option < 0){
-		fprintf(stderr, "No se consta de vehículos disponibles\n");
-		return;
+	sqlite3* db;
+	if(sqlite3_open("DeustoRenting.db", &db) != SQLITE_OK){
+		fprintf(stderr, "Error al conectarse a la base de datos");
+		exit(1);
 	}
-	initContract(vehicles[option], user->dni);
+	Contract* contract = getContract(db, user->dni);
+	sqlite3_close(db);
+	if(contract == NULL){
+		Vehicle* vehicles = NULL;
+		int option = getVehicleIndex(&vehicles);
+		if(option < 0){
+			fprintf(stderr, "Actualmente la empresa no dispone de ningún vehículo para su alquiler\n");
+			return;
+		}
+		initContract(vehicles[option], user->dni);
+	}else{
+		printfln("Usted ya consta de un contrato vigente con la empresa. Anúlelo si desea iniciar uno nuevo");
+	}
 }
 
 int randomInt(int min, int max) {
@@ -56,7 +67,6 @@ char* getDateEnd() {
 	return date_end;
 }
 
-
 void generateContract(char* dni, char* registration_number, int cod_service) {
 	Contract contract;
 
@@ -80,10 +90,10 @@ void generateContract(char* dni, char* registration_number, int cod_service) {
 		deleteContract(db, *actualContract);
 	}
 	if(!insertContract(db, contract)){
-		fprintf(stderr,"\nError guardando el contrato");
+		fprintf(stderr,"Error guardando el contrato\n");
 		exit(1);
 	}
-	writeContractTXT(contract , DIRCONTRACT);
+	writeContractTXT(contract, DIRCONTRACT);
 	printfln("Se ha generado tu contrato en la dirección %s", DIRCONTRACT);
 
 	sqlite3_close(db);
@@ -111,10 +121,9 @@ unsigned short getServiceOption(void){
 }
 
 int insertContract(sqlite3 *db, Contract con) {
-
 	sqlite3_stmt *stmt;
 	char consulta[] =
-			"insert into Contratos(Matricula, Fecha_Inicio, Fecha_Fin, Descripcion, Entrega_Deposito, Horas_Cancelacion, Dni_Usuario, Cod_Servicio) values (?,?,?,?,?,?,?,?)  ; ";
+			"insert into Contratos(Matricula, Fecha_Inicio, Fecha_Fin, Entrega_Deposito, Cod_Servicio, Horas_Cancelacion, Dni_Usuario) values (?,?,?,?,?,?,?)  ; ";
 
 	int result = sqlite3_prepare_v2(db, consulta, -1, &stmt, NULL);
 
@@ -123,39 +132,24 @@ int insertContract(sqlite3 *db, Contract con) {
 			SQLITE_STATIC);
 	result = sqlite3_bind_text(stmt, 2, con.date_start, strlen(con.date_start),
 			SQLITE_STATIC);
-
 	result = sqlite3_bind_text(stmt, 3, con.date_end, strlen(con.date_end),
 			SQLITE_STATIC);
-	result = sqlite3_bind_int(stmt, 5, con.tank);
+	result = sqlite3_bind_int(stmt, 4, con.tank);
+	result = sqlite3_bind_int(stmt, 5, con.cod_service);
 	result = sqlite3_bind_int(stmt, 6, con.cancellation_hours);
-
 	result = sqlite3_bind_text(stmt, 7, con.dni_user, strlen(con.dni_user),
 			SQLITE_STATIC);
 
-	result = sqlite3_bind_int(stmt, 8, con.cod_service);
-
-
-	if (result != SQLITE_OK) {
-		printf("Error with parameters\n");
-		printf("%s\n", sqlite3_errmsg(db));
-		return result = 0;
+	if(result != SQLITE_OK){
+		return 0;
 	}
-	result = sqlite3_step(stmt);
-	if (result != SQLITE_DONE) {
-		printf("Error insert parameters\n");
-		return result = 0;
+	if(sqlite3_step(stmt) != SQLITE_DONE){
+		return 0;
 	}
-	result = sqlite3_finalize(stmt);
-	if (result != SQLITE_OK) {
-		printf("Error finalizing statement (INSERT)\n");
-		printf("%s\n", sqlite3_errmsg(db));
-		return result = 0;
-	}
-
-	printf("Prepared statement finalized (INSERT)\n");
-	return result = 1;
-
+	sqlite3_finalize(stmt);
+	return 1;
 }
+
 
 int deleteContract(sqlite3 *db, Contract con) {
 
@@ -181,8 +175,6 @@ int deleteContract(sqlite3 *db, Contract con) {
 		printf("%s\n", sqlite3_errmsg(db));
 		return result = 0;
 	}
-
-	printf("Prepared statement finalized (DELETE)\n");
 	return result = 1;
 
 }
@@ -196,14 +188,36 @@ void returnContract(User* user){
 	if(contract == NULL){
 		printfln("Usted no dispone de ningún vehículo para devolver");
 	}else{
-		printfln("¿Está seguro de que quiere renunciar al siguiente contrato?");
-		printContract(*contract);
-		deleteContract(db, *contract);
+		if(confirmDeleteContract(*contract)){
+			printfln("Su contrato sigue vigente");
+		}else{
+			deleteContract(db, *contract);
+			printfln("Contrato descartado");
+		}
 	}
-	free(contract);
+	freeContract(contract);
 	sqlite3_close(db);
 }
 
+
+int confirmDeleteContract(Contract contract){
+	printfln("¿Está seguro de que quiere renunciar al siguiente contrato?");
+	printContract(contract);
+	printfln("\t0. Si");
+	printfln("\t1. No");
+	char* input = calloc(3, sizeof(char));
+	readLine(&input);
+	unsigned short option = 2;
+	sscanf(input, "%hu", &option);
+	while(option > 1){
+		printfln("'%hu' no es una opción válida. Escoge entre 0 y 1");
+		free(input); input=NULL;
+		input = calloc(13, sizeof(char));
+		readLine(&input);
+	}
+	free(input); input=NULL;
+	return option;
+}
 void showContract(User* user){
 	sqlite3* db;
 	if(sqlite3_open("DeustoRenting.db", &db) != SQLITE_OK){
@@ -220,74 +234,84 @@ void showContract(User* user){
 	free(contract);
 }
 
-Contract* getContract(sqlite3 *db, char* dni){
 
+Contract* getContract(sqlite3 *db, char* dni) {
 	sqlite3_stmt *stmt;
-	char consulta[] =
-			"select co.Matricula, co.Fecha_Inicio, co.Fecha_Fin, co.Descripcion, co.Entrega_Deposito, co.Horas_Cancelacion, co.Dni_Usuario , co.Cod_Servicio FROM Usuarios u, Contratos co WHERE (?) = co.Dni_Usuario ; ";
+	const char* query = "SELECT * FROM Contratos WHERE Dni_Usuario = ?";
 
-	int result = sqlite3_prepare_v2(db, consulta, -1, &stmt, NULL);
-	result = sqlite3_bind_text(stmt, 1, dni,strlen(dni),
-			SQLITE_STATIC);
+	int result = sqlite3_prepare_v2(db, query, -1, &stmt, NULL);
 
 	if (result != SQLITE_OK) {
-		fprintf(stderr, "Error preparing statement: %s\n", sqlite3_errmsg(db));
+		fprintf(stderr, "Error preparando el statement: %s\n", sqlite3_errmsg(db));
 		return NULL;
 	}
 
-	int num_rows = 0;
-	Contract *con1;
-	con1 = NULL;
-	while (sqlite3_step(stmt) == SQLITE_ROW) {
-		num_rows++;
+	result = sqlite3_bind_text(stmt, 1, dni, strlen(dni), SQLITE_STATIC);
 
-		Contract *tmp = realloc(con1, num_rows * sizeof(Contract));
-		if (!tmp) {
-			fprintf(stderr, "Error allocating memory\n");
-			free(con1);
-			return NULL;
-		}
-		con1 = tmp;
-
-		const char *regist = (const char*) sqlite3_column_text(stmt, 0);
-		memcpy(con1[num_rows - 1].registration_number, regist, 9);
-
-
-		con1[num_rows - 1].date_start = strdup(
-				(char*) sqlite3_column_text(stmt, 1));
-		con1[num_rows - 1].date_end= strdup(
-				(char*) sqlite3_column_text(stmt, 2));
-		con1[num_rows - 1].tank = sqlite3_column_int(stmt, 4);
-
-		con1[num_rows - 1].cancellation_hours = sqlite3_column_int(stmt, 5);
-
-
-
-		const char *dni = (const char*) sqlite3_column_text(stmt, 6);
-		memcpy(con1[num_rows - 1].registration_number, dni, 10);
-
-		con1[num_rows - 1].cod_service = sqlite3_column_int(stmt, 7);
-
+	if (result != SQLITE_OK) {
+		fprintf(stderr, "Error en el bindeo del parámetro: %s\n", sqlite3_errmsg(db));
+		sqlite3_finalize(stmt);
+		return NULL;
 	}
+
+	result = sqlite3_step(stmt);
+
+	if (result == SQLITE_DONE) {
+		sqlite3_finalize(stmt);
+		return NULL;
+	}
+
+	if (result != SQLITE_ROW) {
+		fprintf(stderr, "Error: %s\n", sqlite3_errmsg(db));
+		sqlite3_finalize(stmt);
+		return NULL;
+	}
+
+	Contract* contract = calloc(1, sizeof(Contract));
+
+	char* registration_number = (char*)sqlite3_column_text(stmt, 0);
+	contract->registration_number = calloc(strlen(registration_number) + 1, sizeof(char));
+	strcpy(contract->registration_number, registration_number);
+
+	char* date_start = (char*)sqlite3_column_text(stmt, 1);
+	contract->date_start = calloc(strlen(date_start) + 1, sizeof(char));
+	strcpy(contract->date_start, date_start);
+
+	char* date_end = (char*)sqlite3_column_text(stmt, 2);
+	contract->date_end = calloc(strlen(date_end) + 1, sizeof(char));
+	strcpy(contract->date_end, date_end);
+
+	contract->tank = sqlite3_column_int(stmt, 3);
+
+	contract->cancellation_hours = sqlite3_column_int(stmt, 4);
+	contract->dni_user = calloc(strlen(dni) + 1, sizeof(char));
+	strcpy(contract->dni_user, dni);
+
+	contract->cod_service = sqlite3_column_int(stmt, 6);
 
 	sqlite3_finalize(stmt);
-	if (result != SQLITE_OK) {
-		printf("Error ending prepared statement: %s\n",
-				sqlite3_errmsg(db));
-	}
-	return con1;
 
+	return contract;
 }
 
+
 void printContract(Contract contract){
-	printf("Datos de su contrato:\n");
-	printf("\tMatrícula: %s\n", contract.registration_number);
-	printf("\tFecha inicio: %s\n", contract.date_start);
-	printf("\tFecha fin: %s\n", contract.date_end);
-	printf("\tEntrega del vehículo con el tanque lleno: %d\n", contract.tank);
-	printf("\tHoras de cancelación: %d\n", contract.cancellation_hours);
-	printf("\tDNI del usuario: %s\n", contract.dni_user);
-	printf("\tCódigo del servicio contratado: %d\n", contract.cod_service);
+	printfln("Datos de su contrato:");
+	printfln("\tMatrícula: %s", contract.registration_number);
+	printfln("\tFecha inicio: %s", contract.date_start);
+	printfln("\tFecha fin: %s", contract.date_end);
+	if(contract.tank){
+		printfln("\tEntrega del vehículo con el tanque lleno");
+	}else{
+		printfln("\tNo requerida la entrega del vehículo con el tanque lleno");
+	}
+	printfln("\tHoras de cancelación: %d", contract.cancellation_hours);
+	printfln("\tDNI del usuario: %s", contract.dni_user);
+	if (contract.cod_service < 0) {
+		printfln("\tEl contrato no consta de ningún servicio");
+	}else{
+		printfln("\tCódigo del servicio contratado: %d", contract.cod_service);
+	}
 }
 
 void writeContractTXT(Contract contract ,char *file) {
@@ -304,7 +328,11 @@ void writeContractTXT(Contract contract ,char *file) {
 	fprintf(f, "\tMatricula: %s\n", contract.registration_number);
 	fprintf(f, "\tFecha de recojida: %s\n", contract.date_start);
 	fprintf(f, "\tFecha de entrega: %s\n", contract.date_end);
-	fprintf(f, "\tEntrega del vehículo con el tanque lleno: %d\n", contract.tank);
+	if(contract.tank){
+		fprintf(f, "\tEntrega del vehículo con el tanque lleno");
+	}else{
+		fprintf(f, "\tNo requerida la entrega del vehículo con el tanque lleno");
+	}
 	fprintf(f, "\tHoras de cancelación: %d\n", contract.cancellation_hours);
 	if (contract.cod_service == -1) {
 		fprintf(f, "\tEl contrato no consta de ningún servicio\n");
@@ -312,8 +340,17 @@ void writeContractTXT(Contract contract ,char *file) {
 		fprintf(f, "\tCódigo del servicio contratado: %d\n", contract.cod_service);
 	}
 
-	//	logger("Factura guardada");
+	//	logger("Contrato guardado");
 
 	fclose(f);
+}
 
+void freeContract(Contract* contract){
+	if(contract != NULL){
+		free(contract->date_start);
+		free(contract->date_end);
+		free(contract->dni_user);
+		free(contract->registration_number);
+		free(contract);
+	}
 }

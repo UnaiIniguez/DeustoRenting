@@ -9,6 +9,8 @@ Service showServices(void){
 	}
 	Service* services = getServices(db, &numServices);
 	sqlite3_close(db);
+	printfln("");
+	printLine();
 	printfln("LISTA DE SERVICIOS A ELEGIR:");
 	printLine();
 	for(int i = 0; i < numServices; i++){
@@ -30,24 +32,28 @@ void bookService(User* user){
 	if(contract == NULL){
 		printfln("Usted no consta de ningún contrato con nuestra compañía.");
 	}else{
-		if(contract->cod_service < 0){
-			printfln("Su contrato ya consta de un servicio. El número máximo de servicios por contrato es 1");
+		if(contract->cod_service == -1){
+			Vehicle* vehicle = getUsersVehicle(db, user->dni);
+			Service service = showServices();
+			printfln("Servicio añadido con éxito");
+			generateContract(user->dni, vehicle->registration_number, service.cod_Service);
+			freeVehicle(vehicle);
 		}else{
-			initContract(getUsersVehicle(db, user->dni), user->dni);
+			printfln("Su contrato ya consta de un servicio. El número máximo de servicios por contrato es 1");
 		}
 	}
 	sqlite3_close(db);
-	free(contract);
+	freeContract(contract);
 }
 
 
 unsigned short getSelectedServiceIndex(unsigned short optionMax){
 	char* input = calloc(13, sizeof(char));
 	readLine(&input);
-	unsigned short option = optionMax + 1;
+	unsigned short option = optionMax;
 	sscanf(input, "%hu", &option);
-	while(option > optionMax){
-		printfln("Introduce una opción entre 0 y %hu", optionMax);
+	while(option > optionMax - 1){
+		printfln("Introduce una opción entre 0 y %hu", optionMax - 1);
 		free(input); input=NULL;
 		input = calloc(13, sizeof(char));
 		readLine(&input);
@@ -55,62 +61,6 @@ unsigned short getSelectedServiceIndex(unsigned short optionMax){
 	free(input); input=NULL;
 	return option;
 }
-
-//unsigned short optionSelected(Service *services, int num_services) {
-//
-//	unsigned short option = 2;
-//
-//	if (services != NULL) {
-//
-//		int i;
-//
-//		for (i = 0; i < num_services; i++) {
-//			printf("\n\t%i. %s", i, services[i].description);
-//			printf("(Precio: %.2f)", services[i].price);
-//		}
-//		printf("\n\t%d. Volver\n", i);
-//		free(services);
-//		char *input = calloc(5, sizeof(char));
-//		readLine(&input);
-//		sscanf(input, "%hu", &option);
-//		while (option > num_services + 1) {
-//			free(input);
-//			char *input = calloc(5, sizeof(char));
-//			printfln("La opción '%d' no existe. Seleccione una opción válida",option);
-//			readLine(&input);
-//			sscanf(input, "%hu", &option);
-//		}
-//		return option;
-//	} else {
-//		return 0;
-//	}
-//}
-
-//void printServicios(User user, sqlite3 *db) {
-//
-//	printf("\n");
-//	printfln("SERVICIOS ADICIONALES:");
-//	printLine();
-//	unsigned short num_services = 0;
-//
-//	Service *services = getServices(db, &num_services);
-//
-//
-//	int p = optionSelected(services, num_services);	//Te devuelve la opcion que quiere almacenar
-//
-//
-//	int j = insertServiceInContract(db, user, &services[p]);
-//
-//	if(j == 1){
-//		printf("Se ha introducido adecuadamente\n");
-//
-//		showMenu(&user);
-//	}
-//	else{
-//		fprintf(stderr, "Ha habido un error");
-//		exit(1);
-//	}
-//}
 
 int insertService(sqlite3 *db, Service sr) {
 	sqlite3_stmt *stmt;

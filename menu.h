@@ -12,5 +12,6 @@
 
 void showMenu(User* user);
 unsigned short getAction();
+void end(User* user);
 
 #endif

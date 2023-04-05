@@ -18,6 +18,8 @@ typedef struct{
 	int type;
 }User;
 
+
+char* getUserName(sqlite3 *db, char* dni);
 void checkUser(User* user);
 void getUser(User* user);
 unsigned short getOption(void);

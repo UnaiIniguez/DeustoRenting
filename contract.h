@@ -20,6 +20,8 @@ typedef struct{
 	int cod_service;
 }Contract;
 
+int confirmDeleteContract(Contract contract);
+void freeContract(Contract* contract);
 void returnContract(User* user);
 void printContract(Contract contract);
 void showContract(User* user);

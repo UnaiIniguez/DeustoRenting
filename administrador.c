@@ -8,20 +8,13 @@ void isAdmin(char * dni){
 		fprintf(stderr, "Error al conectarse a la base de datos");
 		exit(1);
 	}
-	int p = typeUser(db, dni);
-
-	if(p == 1){
-
+	if(typeUser(db, dni)){
 		showMenuAdmin(db);
-
 	}else{
 		printfln("No eres administrador");
 	}
 	sqlite3_close(db);
 }
-
-
-
 
 void showMenuAdmin(sqlite3 *db){
 
@@ -45,22 +38,26 @@ void showMenuAdmin(sqlite3 *db){
 		viewVehicles(db);
 	}else if (option == 3) {
 		insertNewService(db);
-	}else {
+	}else if (option == 4)  {
 		eliminateService(db);
+	}else{
+		exit(0);
 	}
 
 }
 
 unsigned short getSelection(){
-	unsigned short option = 5;
+	unsigned short option = 6;
 	char* input = calloc(3, sizeof(char));
 	readLine(&input);
+	sscanf(input, "%hu", &option);
 	while(option > 5){
 		free(input);
 		input=NULL;
 		input = calloc(3, sizeof(char));
 		printfln("La opción '%d' no existe. Seleccione una opción válida", option);
 		readLine(&input);
+		sscanf(input, "%hu", &option);
 	}
 	free(input); input=NULL;
 	return option;
