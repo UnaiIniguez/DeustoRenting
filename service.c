@@ -19,6 +19,28 @@ Service showServices(void){
 	return service;
 }
 
+void bookService(User* user){
+	sqlite3* db;
+	if(sqlite3_open("DeustoRenting.db", &db) != SQLITE_OK){
+		fprintf(stderr, "Error al conectarse a la base de datos");
+		exit(1);
+	}
+
+	Contract* contract = getContract(db, user->dni);
+	if(contract == NULL){
+		printfln("Usted no consta de ningún contrato con nuestra compañía.");
+	}else{
+		if(contract->cod_service < 0){
+			printfln("Su contrato ya consta de un servicio. El número máximo de servicios por contrato es 1");
+		}else{
+			initContract(getUsersVehicle(db, user->dni), user->dni);
+		}
+	}
+	sqlite3_close(db);
+	free(contract);
+}
+
+
 unsigned short getSelectedServiceIndex(unsigned short optionMax){
 	char* input = calloc(13, sizeof(char));
 	readLine(&input);

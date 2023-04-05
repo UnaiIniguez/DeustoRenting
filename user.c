@@ -11,30 +11,32 @@ void getUser(User* user){
 		getSurname2(user);
 		getEmail(user);
 		getPassword(user, "deseada");
+		user->type = 0;
+		insertUser(*user);
 	}else{
 		printf("\n");
 		printfln("INICIAR SESIÓN");
 		printLine();
 		getDNI(user);
-		checkDNI(user);
 		getPassword(user, "");
-		checkPassword(user);
+		checkUser(user);
 	}
-
 }
 
-void checkDNI(User* user){
-//	while(hasDNI(user->dni)){
-//		printf("El DNI introducido ya está registrado\n");
-//		getDNI(user);
-//	}
-}
-
-void checkPassword(User* user){
-//	while(hasPassword(user->password)){
-//		printf("La contraseña introducida ya está registrada\n");
-//		getPassword(user, "");
-//	}
+void checkUser(User* user){
+	sqlite3* db;
+	if(sqlite3_open("DeustoRenting.db", &db) != SQLITE_OK){
+		fprintf(stderr, "Error al conectarse a la base de datos");
+		exit(1);
+	}
+	if(!userExist(db, user->dni, user->password)){
+		printfln("El usuario con dni '%s' y contraseña '%s' no existe en la base de datos");
+		sqlite3_close(db);
+		getUser(user);
+	}else{
+		printfln("Sesión iniciada con éxito");
+		sqlite3_close(db);
+	}
 }
 
 void getName(User* user){
@@ -68,7 +70,8 @@ void getEmail(User* user){
 	printfln("Introduzca su dirección de email");
 	char* input = calloc(13, sizeof(char));
 	readLine(&input);
-	while(strcmp(&input[strlen(input) - 11], "@gmail.com\n")){
+	while(strcmp(&input[strlen(input) - 10], "@gmail.com")){
+		fprintf(stderr, "%s", input);
 		printfln("Introduce una dirección que acabe en '@gmail.com'");
 		free(input); input=NULL;
 		input = calloc(13, sizeof(char));
@@ -124,14 +127,17 @@ unsigned short getOption(void){
 }
 
 
-int insertUser(sqlite3 *db, User u) {
-
+int insertUser(User u) {
+	sqlite3* db;
+	if(sqlite3_open("DeustoRenting.db", &db) != SQLITE_OK){
+		fprintf(stderr, "Error al conectarse a la base de datos");
+		exit(1);
+	}
 	sqlite3_stmt *stmt;
 	char consulta[] =
 			"insert into Usuarios(DNI, Nombre, Apellido1, Apellido2, Correo, Tipo, Contrasenya, Idioma_Preferido) values (?,?,?,?,?,?,?, ?)  ; ";
 
 	int result = sqlite3_prepare_v2(db, consulta, -1, &stmt, NULL);
-
 	result = sqlite3_bind_text(stmt, 1, u.dni, strlen(u.dni),
 	SQLITE_STATIC);
 	result = sqlite3_bind_text(stmt, 2, u.name, strlen(u.name),
@@ -147,28 +153,30 @@ int insertUser(sqlite3 *db, User u) {
 
 	result = sqlite3_bind_text(stmt, 7, u.password, strlen(u.password),
 	SQLITE_STATIC);
-	result = sqlite3_bind_text(stmt, 8, u.prefer_Language,
-			strlen(u.prefer_Language),
-			SQLITE_STATIC);
+
+	fprintf(stderr, "A\n");
 
 	if (result != SQLITE_OK) {
 		printf("Error with parameters\n");
 		printf("%s\n", sqlite3_errmsg(db));
+		sqlite3_close(db);
 		return result = 0;
 	}
 	result = sqlite3_step(stmt);
 	if (result != SQLITE_DONE) {
 		printf("Error insert parameters\n");
+		sqlite3_close(db);
 		return result = 0;
 	}
 	result = sqlite3_finalize(stmt);
 	if (result != SQLITE_OK) {
 		printf("Error finalizing statement (INSERT)\n");
 		printf("%s\n", sqlite3_errmsg(db));
+		sqlite3_close(db);
 		return result = 0;
 	}
 
-	printf("Prepared statement finalized (INSERT)\n");
+	sqlite3_close(db);
 	return result = 1;
 }
 
@@ -217,9 +225,7 @@ int typeUser(sqlite3 *db, char *dni){
     }
 
     result = sqlite3_step(stmt);
-    if (result == SQLITE_ROW) {
-        // Si la consulta devuelve una fila, el valor existe en la base de datos
-    } else if (result != SQLITE_DONE) {
+    if (result != SQLITE_DONE) {
         // Si la consulta devuelve un error
         printf("Error: %s\n", sqlite3_errmsg(db));
         sqlite3_finalize(stmt);
@@ -257,7 +263,7 @@ int userExist(sqlite3 *db, char *DNI, char *password) {
     } else if (result != SQLITE_DONE) {
         // Si la consulta devuelve un error
         fprintf(stderr, "Error: %s\n", sqlite3_errmsg(db));
-        return 1;
+        return 0;
     }
 
     result = sqlite3_finalize(stmt);

@@ -2,7 +2,7 @@
 #include <stdio.h>
 #include <string.h>
 
-#define INITIAL_SIZE 10
+#define INITIAL_SIZE 20
 
 int readLine(char **input) {
 	printf("-->");

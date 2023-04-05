@@ -10,7 +10,7 @@
 #include "Menu.h"
 #include "ctype.h"
 
-void isAdmin(sqlite3 *db,char * dni);
+void isAdmin(char * dni);
 void showMenuAdmin(sqlite3 *db);
 unsigned short getSelection();
 void eliminateVehicle(sqlite3 *db);

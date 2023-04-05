@@ -1,11 +1,11 @@
 #include "contract.h"
 
+#define DIRCONTRACT "contract.txt"
 
 void initContract(Vehicle vehicle, char* dni){
 	showVehicle(vehicle);
 	showOptions();
-	unsigned short option = getServiceOption();
-	if(option == 0){
+	if(getServiceOption() == 0){
 		Service service = showServices();
 		printfln("Servicio añadido con éxito");
 		generateContract(dni, vehicle.registration_number, service.cod_Service);
@@ -25,8 +25,8 @@ void bookVehicle(User* user){
 }
 
 int randomInt(int min, int max) {
-    srand(time(NULL));
-    return rand() % (max - min + 1) + min;
+	srand(time(NULL));
+	return rand() % (max - min + 1) + min;
 }
 
 char* getDateStart() {
@@ -70,16 +70,23 @@ void generateContract(char* dni, char* registration_number, int cod_service) {
 	contract.date_end = getDateEnd();
 	contract.cancellation_hours = randomInt(1, 3) * 24;
 
-	writeContractTXT(contract , "contract.txt");
-//Si te mola el formato del txt eliminar los prints, son solo para comprobar
-//	printf("El contrato generado para la compra es el siguiente:\n");
-//	printf("\tMatrícula: %s\n", contract.registration_number);
-//	printf("\tFecha inicio: %s\n", contract.date_start);
-//	printf("\tFecha fin: %s\n", contract.date_end);
-//	printf("\tEntrega del vehículo con el tanque lleno: %d\n", contract.tank);
-//	printf("\tHoras de cancelación: %d\n", contract.cancellation_hours);
-//	printf("\tDNI del usuario: %s\n", contract.dni_user);
-//	printf("\tCódigo del servicio contratado: %d\n", contract.cod_service);
+	sqlite3* db;
+	if(sqlite3_open("DeustoRenting.db", &db) != SQLITE_OK){
+		fprintf(stderr, "Error al conectarse a la base de datos");
+	}
+
+	Contract* actualContract = getContract(db, dni);
+	if(actualContract != NULL){
+		deleteContract(db, *actualContract);
+	}
+	if(!insertContract(db, contract)){
+		fprintf(stderr,"\nError guardando el contrato");
+		exit(1);
+	}
+	writeContractTXT(contract , DIRCONTRACT);
+	printfln("Se ha generado tu contrato en la dirección %s", DIRCONTRACT);
+
+	sqlite3_close(db);
 }
 
 
@@ -180,7 +187,40 @@ int deleteContract(sqlite3 *db, Contract con) {
 
 }
 
-Contract* viewContract(sqlite3 *db,char dni[]){
+void returnContract(User* user){
+	sqlite3* db;
+	if(sqlite3_open("DeustoRenting.db", &db) != SQLITE_OK){
+		fprintf(stderr, "Error al conectarse a la base de datos");
+	}
+	Contract* contract = getContract(db, user->dni);
+	if(contract == NULL){
+		printfln("Usted no dispone de ningún vehículo para devolver");
+	}else{
+		printfln("¿Está seguro de que quiere renunciar al siguiente contrato?");
+		printContract(*contract);
+		deleteContract(db, *contract);
+	}
+	free(contract);
+	sqlite3_close(db);
+}
+
+void showContract(User* user){
+	sqlite3* db;
+	if(sqlite3_open("DeustoRenting.db", &db) != SQLITE_OK){
+		fprintf(stderr, "Error al conectarse a la base de datos");
+		exit(1);
+	}
+	Contract* contract = getContract(db, user->dni);
+	sqlite3_close(db);
+	if(contract == NULL){
+		printfln("Usted no cuenta con ningún contrato con nuestra compañía");
+	}else{
+		printContract(*contract);
+	}
+	free(contract);
+}
+
+Contract* getContract(sqlite3 *db, char* dni){
 
 	sqlite3_stmt *stmt;
 	char consulta[] =
@@ -235,13 +275,22 @@ Contract* viewContract(sqlite3 *db,char dni[]){
 		printf("Error ending prepared statement: %s\n",
 				sqlite3_errmsg(db));
 	}
-	printf("Prepared statement finalized (SELECT)\n");
-
 	return con1;
 
 }
 
-void writeContractTXT( Contract contract ,char *file) {
+void printContract(Contract contract){
+	printf("Datos de su contrato:\n");
+	printf("\tMatrícula: %s\n", contract.registration_number);
+	printf("\tFecha inicio: %s\n", contract.date_start);
+	printf("\tFecha fin: %s\n", contract.date_end);
+	printf("\tEntrega del vehículo con el tanque lleno: %d\n", contract.tank);
+	printf("\tHoras de cancelación: %d\n", contract.cancellation_hours);
+	printf("\tDNI del usuario: %s\n", contract.dni_user);
+	printf("\tCódigo del servicio contratado: %d\n", contract.cod_service);
+}
+
+void writeContractTXT(Contract contract ,char *file) {
 
 	//Cuando se añada la parte de la reserva añadir un array de reservas
 	// a la entreda para poder extraer su informacion
@@ -258,12 +307,12 @@ void writeContractTXT( Contract contract ,char *file) {
 	fprintf(f, "\tEntrega del vehículo con el tanque lleno: %d\n", contract.tank);
 	fprintf(f, "\tHoras de cancelación: %d\n", contract.cancellation_hours);
 	if (contract.cod_service == -1) {
-		fprintf(f, "\tCódigo del servicio contratado: No contratado\n");
+		fprintf(f, "\tEl contrato no consta de ningún servicio\n");
 	}else{
 		fprintf(f, "\tCódigo del servicio contratado: %d\n", contract.cod_service);
 	}
 
-	logger("Factura guardada");
+	//	logger("Factura guardada");
 
 	fclose(f);
 

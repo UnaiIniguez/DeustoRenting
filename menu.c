@@ -2,44 +2,30 @@
 
 void showMenu(User* user){
 	printLine();
-	printf("\n");
 	printfln("MENU PRINCIPAL");
 	printLine();
-	printfln("0. Cambiar Idioma\n"
-			"1. Alquilar vehículo\n"
-			"2. Devolver vehículo\n"
-			"3. Ver contrato de alquiler\n"
-			"4. Contratar servicio\n"
-			"5. Administrar vehículos y servicios (Admin)\n"
-			"6. Salir");
+	printfln("0. Alquilar vehículo\n"
+			 "1. Devolver vehículo\n"
+			 "2. Ver contrato de alquiler\n"
+			 "3. Contratar servicio para mi contrato\n"
+			 "4. Administrar vehículos y servicios (Admin)\n"
+			 "5. Salir");
 
 	unsigned short option = getAction();
 	if(option == 0){
-
-	}else if(option == 1){
 		bookVehicle(user);
+	}else if(option == 1){
+		returnContract(user);
 	}else if(option == 2){
-
+		showContract(user);
 	}else if(option == 3){
-
+		bookService(user);
 	}else if(option == 4){
-		sqlite3* db;
-		if(sqlite3_open("DeustoRenting.db", &db) != SQLITE_OK){
-			fprintf(stderr, "Error al conectarse a la base de datos");
-			exit(1);
-		}
-//		printServicios(*user, db);
-
-	}else if(option == 5){
-
-		sqlite3* db;
-		if(sqlite3_open("DeustoRenting.db", &db) != SQLITE_OK){
-			fprintf(stderr, "Error al conectarse a la base de datos");
-			exit(1);
-		}
-
-		isAdmin(db, user->dni);
+		isAdmin(user->dni);
+	}else{
+		exit(0);
 	}
+	showMenu(user);
 
 }
 

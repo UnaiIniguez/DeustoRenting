@@ -17,6 +17,7 @@ typedef struct{
 }Service;
 
 
+void bookService(User* user);
 unsigned short getSelectedServiceIndex(unsigned short optionMax);
 Service showServices(void);
 void printServicios(User user, sqlite3 *db) ;

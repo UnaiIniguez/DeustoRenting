@@ -20,14 +20,16 @@ typedef struct{
 	int cod_service;
 }Contract;
 
-
+void returnContract(User* user);
+void printContract(Contract contract);
+void showContract(User* user);
 void showOptions(void);
 unsigned short getServiceOption(void);
 void bookVehicle(User* user);
 void initContract(Vehicle vehicle, char* dni);
 int insertContract(sqlite3* db, Contract con);	//Insertar contrato
 int deleteContract(sqlite3* db, Contract con);	//Anular contrato
-Contract* viewContract(sqlite3 *db,char *dni);
+Contract* getContract(sqlite3 *db, char* dni);
 void generateContract(char* dni, char* registration_number, int cod_service);
 int randomInt(int min, int max);
 char* getDateStart();

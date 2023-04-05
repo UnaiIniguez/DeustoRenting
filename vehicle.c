@@ -3,11 +3,11 @@
 int showVechiles(Vehicle** vehicles){
 	printfln("ELIGE UN VEHÍCULO");
 	printLine();
+	int count = 0;
 	sqlite3* db;
 	if(sqlite3_open("DeustoRenting.db", &db) != SQLITE_OK){
 		fprintf(stderr, "Error al conectarse a la base de datos");
 	}
-	int count = 0;
 	*vehicles = availableVehicles(db, &count);
 	sqlite3_close(db);
 	for(int i = 0; i < count; i++) {
@@ -21,7 +21,7 @@ void showVehicle(Vehicle vehicle){
 	printLine();
 	printfln("CONTRATO DE ALQUILER");
 	printLine();
-	printfln("DATOS DEL VEHÍCULO SELECCIONADO:\n"
+	printfln("DATOS DEL VEHÍCULO:\n"
 			"\tMatrícula: %s\n"
 			"\tMarca: %s\n"
 			"\tModelo: %s\n"
@@ -224,7 +224,7 @@ Vehicle *vehicleReserved(sqlite3 *db, int *num_Vehicles){
 
 }
 
-Vehicle *usersVehicle(sqlite3 *db, char *dni) {
+Vehicle getUsersVehicle(sqlite3 *db, char *dni) {
     sqlite3_stmt *stmt;
     char consulta[] =
         "select ve.Color, ve.Modelo, ve.Marca, ve.Num_Plazas, ve.Matricula, ve.Precio, ve.Num_Puerta FROM Vehiculos ve, Usuarios us, Contratos co WHERE ve.Matricula = co.Matricula AND co.Dni_Usuario = us.DNI AND us.DNI = ?;";
@@ -232,44 +232,29 @@ Vehicle *usersVehicle(sqlite3 *db, char *dni) {
     int result = sqlite3_prepare_v2(db, consulta, -1, &stmt, NULL);
     if (result != SQLITE_OK) {
         fprintf(stderr, "Error preparing statement: %s\n", sqlite3_errmsg(db));
-        return NULL;
+        exit(1);
     }
 
     result = sqlite3_bind_text(stmt, 1, dni, strlen(dni), SQLITE_STATIC);
     if (result != SQLITE_OK) {
         fprintf(stderr, "Error binding parameter: %s\n", sqlite3_errmsg(db));
         sqlite3_finalize(stmt);
-        return NULL;
+        exit(1);
     }
 
-    int num_rows = 0;
-    Vehicle *vehicles = NULL;
+    Vehicle vehicle;
 
-    while (sqlite3_step(stmt) == SQLITE_ROW) {
-        num_rows++;
+    vehicle.color = strdup((char *)sqlite3_column_text(stmt, 0));
+    vehicle.model = strdup((char *)sqlite3_column_text(stmt, 1));
+    vehicle.brand = strdup((char *)sqlite3_column_text(stmt, 2));
+    vehicle.num_seats = sqlite3_column_int(stmt, 3);
 
-        Vehicle *tmp = realloc(vehicles, num_rows * sizeof(Vehicle));
-        if (!tmp) {
-            fprintf(stderr, "Error allocating memory\n");
-            free(vehicles);
-            sqlite3_finalize(stmt);
-            return NULL;
-        }
-        vehicles = tmp;
+    const char *regist = (const char *)sqlite3_column_text(stmt, 4);
+    memcpy(vehicle.registration_number, regist, 9);
 
-        vehicles[num_rows - 1].color = strdup((char *)sqlite3_column_text(stmt, 0));
-        vehicles[num_rows - 1].model = strdup((char *)sqlite3_column_text(stmt, 1));
-        vehicles[num_rows - 1].brand = strdup((char *)sqlite3_column_text(stmt, 2));
-        vehicles[num_rows - 1].num_seats = sqlite3_column_int(stmt, 3);
-
-        const char *regist = (const char *)sqlite3_column_text(stmt, 4);
-        memcpy(vehicles[num_rows - 1].registration_number, regist, 9);
-
-        vehicles[num_rows - 1].price = sqlite3_column_double(stmt, 5);
-        vehicles[num_rows - 1].num_doors = sqlite3_column_int(stmt, 6);
-    }
+    vehicle.price = sqlite3_column_double(stmt, 5);
+    vehicle.num_doors = sqlite3_column_int(stmt, 6);
 
     sqlite3_finalize(stmt);
-    printf("Prepared statement finalized (SELECT)\n");
-    return vehicles;
+    return vehicle;
 }

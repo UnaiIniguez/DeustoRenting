@@ -23,4 +23,5 @@ void start(void){
 	User* user = calloc(1, sizeof(user));
 	getUser(user);
 	showMenu(user);
+	free(user);
 }

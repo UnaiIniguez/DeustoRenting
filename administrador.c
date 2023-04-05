@@ -2,8 +2,12 @@
 
 
 
-void isAdmin(sqlite3 *db,char * dni){
-
+void isAdmin(char * dni){
+	sqlite3* db;
+	if(sqlite3_open("DeustoRenting.db", &db) != SQLITE_OK){
+		fprintf(stderr, "Error al conectarse a la base de datos");
+		exit(1);
+	}
 	int p = typeUser(db, dni);
 
 	if(p == 1){
@@ -11,9 +15,9 @@ void isAdmin(sqlite3 *db,char * dni){
 		showMenuAdmin(db);
 
 	}else{
-		printf("No eres administrador");
+		printfln("No eres administrador");
 	}
-
+	sqlite3_close(db);
 }
 
 
@@ -35,17 +39,14 @@ void showMenuAdmin(sqlite3 *db){
 
 	if (option == 0) {
 		insertNewVehicle(db);
-	} else if (option == 1) {
+	}else if (option == 1) {
 		eliminateVehicle(db);
-	} else if (option == 2) {
+	}else if (option == 2) {
 		viewVehicles(db);
-
-	} else if (option == 3) {
+	}else if (option == 3) {
 		insertNewService(db);
-	} else if (option == 4) {
+	}else {
 		eliminateService(db);
-	} else {
-		//*******************************DEBE VOLVER AL MENÚ**************
 	}
 
 }
@@ -208,10 +209,10 @@ void getMatricula(Vehicle *vehicle){
 }
 
 void getPrecioVehiculo(Vehicle *vehicle){
-    printf("Precio por día: ");
-    float precio = 0;
-    scanf("%f", &precio);
-    vehicle->price = precio;
+	printf("Precio por día: ");
+	float precio = 0;
+	scanf("%f", &precio);
+	vehicle->price = precio;
 }
 
 void getPuertas(Vehicle *vehicle){
