@@ -146,11 +146,10 @@ void insertNewVehicle(sqlite3 *db){
 	getPlazas(&vehicle);
 	getMatricula(&vehicle);
 	getPrecioVehiculo(&vehicle);
-	getPuertas(&vehicle);
 	if(insertVehicle(db, vehicle) == 1){
-		printf("\nEl vehículo se ha insertado correctamente\n");
+		printfln("\nEl vehículo se ha insertado correctamente");
 	}else{
-		printf("\nEl vehículo no se ha insertado correctamente\n");
+		printfln("\nEl vehículo no se ha insertado correctamente");
 	}
 }
 
@@ -188,18 +187,19 @@ void getColor(Vehicle *vehicle){
 }
 
 void getPlazas(Vehicle *vehicle){
-	printf("Numero de plazas: ");
-	int num_Plazas = 0;
-	scanf("%d", &num_Plazas);
-	vehicle->num_seats = num_Plazas;
-
+	printfln("Número de plazas: ");
+	char *input = calloc(9, sizeof(char));
+	readLine(&input);
+	sscanf(input, "%d", &vehicle->num_seats);
+	free(input);
+	input = NULL;
 }
 
 void getMatricula(Vehicle *vehicle){
-
-	printfln("Matricula del vehiculo:");
+	printfln("Matricula del vehículo");
 	char *input = calloc(9, sizeof(char));
 	readLine(&input);
+	vehicle->registration_number = calloc(strlen(input) + 1, sizeof(char));
 	strcpy(vehicle->registration_number, input);
 	free(input);
 	input = NULL;
@@ -212,15 +212,6 @@ void getPrecioVehiculo(Vehicle *vehicle){
 	vehicle->price = precio;
 }
 
-void getPuertas(Vehicle *vehicle){
-	printf("Numero de plazas: ");
-	int num_Plazas = 0;
-	scanf("%d", &num_Plazas);
-	vehicle->num_seats = num_Plazas;
-
-}
-
-//************************************************************************
 void insertNewService(sqlite3 *db){
 
 	printLine();

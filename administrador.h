@@ -22,7 +22,6 @@ void getColor(Vehicle *vehicle);
 void getPlazas(Vehicle *vehicle);
 void getMatricula(Vehicle *vehicle);
 void getPrecioVehiculo(Vehicle *vehicle);
-void getPuertas(Vehicle *vehicle);
 
 
 void insertNewService(sqlite3 *db);
