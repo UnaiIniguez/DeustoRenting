@@ -1,6 +1,6 @@
 #include "contract.h"
 
-#define DIRCONTRACT "C:/Users/contract.txt"
+#define DIRCONTRACT "../../contract.txt"
 
 void initContract(Vehicle vehicle, char* dni){
 	showVehicle(vehicle);
