@@ -75,7 +75,7 @@ int insertService(sqlite3 *db, Service sr) {
 	result = sqlite3_bind_double(stmt, 2, sr.price);
 
 	if (result != SQLITE_OK) {
-		printf("Error with parameters\n");
+		printf("Error con los parámetros\n");
 		printf("%s\n", sqlite3_errmsg(db));
 		return result = 0;
 	}
@@ -86,7 +86,7 @@ int insertService(sqlite3 *db, Service sr) {
 	}
 	result = sqlite3_finalize(stmt);
 	if (result != SQLITE_OK) {
-		printf("Error finalizing statement (INSERT)\n");
+		printf("Error al finalizar la sentencia (INSERT)\n");
 		printf("%s\n", sqlite3_errmsg(db));
 		return result = 0;
 	}
@@ -108,7 +108,7 @@ int deleteService(sqlite3 *db, int cod) {
 	}
 	result = sqlite3_finalize(stmt);
 	if (result != SQLITE_OK) {
-		printf("Error finalizing statement (DELETE)\n");
+		printf("Error al finalizar la sentencia (DELETE)\n");
 		printf("%s\n", sqlite3_errmsg(db));
 		return result = 0;
 	}
@@ -173,7 +173,7 @@ int insertServiceInContract(sqlite3 *db, User u, Service *service) {
 
 
 	if (result != SQLITE_OK) {
-		printf("Error with parameters\n");
+		printf("Error con los parámetros\n");
 		printf("%s\n", sqlite3_errmsg(db));
 		return result = 0;
 	}
@@ -184,7 +184,7 @@ int insertServiceInContract(sqlite3 *db, User u, Service *service) {
 	}
 	result = sqlite3_finalize(stmt);
 	if (result != SQLITE_OK) {
-		printf("Error finalizing statement (INSERT)\n");
+		printf("Error al finalizar la sentencia (INSERT)\n");
 		printf("%s\n", sqlite3_errmsg(db));
 		return result = 0;
 	}

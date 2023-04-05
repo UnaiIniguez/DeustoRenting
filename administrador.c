@@ -78,6 +78,7 @@ void eliminateVehicle(sqlite3 *db){
 	input = NULL;
 	if(deleteVehicle(db, registration) == 1){
 		printf("El vehiculo se ha eliminado adecuadamente");
+		logger("Vehiculo eliminado");
 	}else{
 		printf("No existe ningún vehículo con matrícula %s", input);
 	}
@@ -148,6 +149,7 @@ void insertNewVehicle(sqlite3 *db){
 	getPrecioVehiculo(&vehicle);
 	if(insertVehicle(db, vehicle) == 1){
 		printfln("\nEl vehículo se ha insertado correctamente");
+		logger("Nuevo vehiculo insertado");
 	}else{
 		printfln("\nEl vehículo no se ha insertado correctamente");
 	}
@@ -223,6 +225,7 @@ void insertNewService(sqlite3 *db){
 	getPrecioServicio(&service);
 	if(insertService(db, service) == 1){
 		printfln("\nSe ha insertado correctamente");
+		logger("Nuevo servicio añadido");
 	}else{
 		printfln("\nNo se ha insertado correctamente");
 	}
@@ -262,6 +265,7 @@ void eliminateService(sqlite3 *db){
 
 	if (deleteService(db, cod) == 1) {
 		printf("\nEl servicio se ha eliminado adecuadamente");
+		logger("Servicio eliminado");
 	} else {
 		printf("El servicio no existe");
 	}

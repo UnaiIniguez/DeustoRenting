@@ -91,7 +91,6 @@ int insertVehicle(sqlite3 *db, Vehicle ve) {
 		return result = 0;
 	}
 
-	printf("Prepared statement finalized (INSERT)\n");
 	return result = 1;
 }
 
@@ -105,12 +104,12 @@ int deleteVehicle(sqlite3 *db, char matricula[]) {
 			SQLITE_STATIC);
 	result = sqlite3_step(stmt);
 	if (result != SQLITE_DONE) {
-		printf("Error removing parameters\n");
+		printf("Error al eliminar parámetros\n");
 		return result = 0;
 	}
 	result = sqlite3_finalize(stmt);
 	if (result != SQLITE_OK) {
-		printf("Error finalizing statement (DELETE)\n");
+		printf("Error al finalizar la sentencia (DELETE)\n");
 		printf("%s\n", sqlite3_errmsg(db));
 		return result = 0;
 	}
