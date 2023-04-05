@@ -14,6 +14,9 @@ int printfln(const char *format, ...){
 }
 
 void printLine(void){
-	for(int i = 0; i < N; i++) printf("-");
+
+	int numLines = readConfigTXT();
+
+	for(int i = 0; i < numLines; i++) printf("-");
 	printf("\n");
 }

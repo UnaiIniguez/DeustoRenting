@@ -5,6 +5,7 @@
 #include "user.h"
 #include "vehicle.h"
 #include "service.h"
+#include "rwDocs.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>

@@ -1,6 +1,7 @@
 #include "contract.h"
 
 #define DIRCONTRACT "../../contract.txt"
+#define DIRRULES "../../rules.txt"
 
 void initContract(Vehicle vehicle, char* dni){
 	showVehicle(vehicle);
@@ -94,6 +95,8 @@ void generateContract(char* dni, char* registration_number, int cod_service) {
 		exit(1);
 	}
 	writeContractTXT(contract, DIRCONTRACT);
+	writeRules(DIRRULES, dni);
+	logger("Se ha generado un contrato");
 	printfln("Se ha generado tu contrato en la dirección %s", DIRCONTRACT);
 
 	sqlite3_close(db);
@@ -175,6 +178,9 @@ int deleteContract(sqlite3 *db, Contract con) {
 		printf("%s\n", sqlite3_errmsg(db));
 		return result = 0;
 	}
+
+	logger("Se ha eliminado un contrato");
+
 	return result = 1;
 
 }

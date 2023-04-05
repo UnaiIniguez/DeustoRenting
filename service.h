@@ -7,6 +7,7 @@
 #include "stdin.h"
 #include "stdout.h"
 #include "contract.h"
+#include "rwDocs.h"
 #include <stdio.h>
 #include <stdlib.h>
 

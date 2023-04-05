@@ -21,11 +21,35 @@ void readFileTXT(char *archivo) {
 
 }
 
-void writeRules(char *file) {
+int readConfigTXT() {
+
+	int lines;
+
+	FILE *f = fopen("config.txt", "r");
+
+	if (f == NULL) {
+		printf("No se pudo abrir el archivo\n");
+	}
+
+	char line[100];
+	while (fgets(line, sizeof(line), f)) {
+		char *clave = strtok(line, "=");
+		char *valor = strtok(NULL, "\n");
+
+		if (strcmp(clave, "line") == 0) {
+			lines = atoi(valor);
+		}
+	}
+
+	fclose(f);
+
+	return lines;
+
+}
+
+void writeRules(char *file, char *nombre) {
 
 	FILE *f = fopen(file, "w");
-
-	char *test = "Paco";
 
 //	printf( "Funciona" );
 
@@ -35,21 +59,31 @@ void writeRules(char *file) {
 
 	fprintf(f, "(El texto con todas las normas)\n");
 
-	fprintf(f, "Yo %s acepto la normativa", test);
+	fprintf(f, "Yo %s acepto la normativa", nombre);
 
 	fclose(f);
 
 }
 
-void logger(char *msg){
+void logger(char *msg) {
 
+	time_t now = time(NULL);
+	struct tm *t = localtime(&now);
+	char fecha[50];
+	char hora[50];
+
+	strftime(fecha, sizeof(fecha), "%Y-%m-%d", t);
+	strftime(hora, sizeof(hora), "%H:%M:%S", t);
 
 	FILE *f = fopen("log.txt", "w");
 
+	if (f == NULL) {
+		printf("No se pudo abrir el archivo\n");
+	}
 
-	fprintf(f, msg);
+	fprintf(f, "<%s:%s>;%s", fecha, hora, msg);
 
-
+	fclose(f);
 
 }
 

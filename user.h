@@ -7,6 +7,7 @@
 #include "stdout.h"
 #include "stdin.h"
 #include "string.h"
+#include "rwDocs.h"
 
 typedef struct{
 	char* dni;

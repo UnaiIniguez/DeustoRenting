@@ -189,7 +189,7 @@ int insertServiceInContract(sqlite3 *db, User u, Service *service) {
 		return result = 0;
 	}
 
-
+	logger("Nuevo servicio añadido al contrato");
 	return result = 1;
 
 }

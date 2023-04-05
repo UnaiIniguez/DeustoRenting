@@ -174,6 +174,7 @@ int insertUser(User u) {
 		return result = 0;
 	}
 
+	logger("Usuario registrado");
 	sqlite3_close(db);
 	return result = 1;
 }

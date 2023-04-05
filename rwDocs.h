@@ -2,11 +2,16 @@
 #define RWDOCS_H_
 
 #include <stdio.h>
+#include <string.h>
+#include <time.h>
+#include <stdlib.h>
 
 
 void readFileTXT(char *archivo);
 
-void writeRules(char *archivo);
+int readConfigTXT();
+
+void writeRules(char *archivo, char *nombre);
 
 void logger(char *archivo);
 
